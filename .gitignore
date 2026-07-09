@@ -1,0 +1,31 @@
+# VS Code
+.vscode
+.VSCodeCounter
+
+# Git
+.git
+
+# Poetry
+poetry.lock
+
+# Python
+__pycache__
+
+*.pyc
+*.pyi
+
+# CMake
+/build
+
+# Binaries
+**/Release
+**/Debug
+
+/lib
+
+*.pyd
+*.exp
+*.lib
+
+# Storage
+/logs

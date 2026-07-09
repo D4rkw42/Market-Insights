@@ -1,0 +1,36 @@
+[project]
+name = "market-insights"
+version = "1.0.0"
+description = "An application built upon a LSTM neural network that creates insights about financial market for buying or selling operations."
+authors = [
+    { name = "D4rkw42", email = "william.conceicao042@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "pyside6 (>=6.11.1,<7.0.0)"
+]
+
+[tool.poetry]
+packages = [
+    { include = "market_insights", from = "src" },
+    { include = "neural_network", from = "bin" },
+    { include = "build_modules", from = "scripts" }
+]
+
+[tool.poetry.scripts]
+start = "market_insights.main:main" # runs de project
+
+[tool.poetry.plugins."console_scripts"]
+build = "build_modules.main:build"
+clear = "build_modules.main:clear"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pybind11 (>=3.0.4,<4.0.0)",
+    "pybind11-stubgen (>=2.5.5,<3.0.0)"
+]

@@ -12,19 +12,15 @@ poetry.lock
 __pycache__
 
 *.pyc
-*.pyi
 
 # CMake
 /build
 
 # Binaries
-**/Release
 **/Debug
 
-/bin
 /lib
 
-*.pyd
 *.exp
 *.lib
 

@@ -28,12 +28,17 @@ def gen_stubs():
 def build_command():
     # generates all module source from CMakeLists.txt
     commands = [
-        "mkdir build",
         f'cmake . -G "{TARGET_COMPILER}" -B build -DPython_EXECUTABLE="${PYTHON_EXECUTABLE}" -DCMAKE_BUILD_TYPE=Release',
         "cmake --build build --config Release"
     ]
 
+    # verifies if build directory existance and then creates it if not exists
+
+    if not os.path.exists("build"):
+        os.mkdir("build")
+
     # running every command
+
     for cmd in commands:
         os.system("cls")
 

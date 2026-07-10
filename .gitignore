@@ -21,6 +21,7 @@ __pycache__
 **/Release
 **/Debug
 
+/bin
 /lib
 
 *.pyd

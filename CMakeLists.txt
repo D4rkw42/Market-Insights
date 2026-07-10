@@ -4,7 +4,7 @@ project(
     neural-network-module
     VERSION 1.0.0
     DESCRIPTION "Module for neural network operations."
-    HOMEPAGE_URL "https://github.com/D4rkw42/python-gui-app-template"
+    HOMEPAGE_URL "https://github.com/D4rkw42/Market-Insights"
     LANGUAGES CXX
 )
 
@@ -35,12 +35,19 @@ link_directories(${Python_LIBRARY_DIRS})
 
 # sources
 
-file(GLOB NEURAL_NETWORK_SOURCES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/src/neural_network/*.cpp)
+file(GLOB NEURAL_NETWORK_SOURCES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/modules/neural_network/src/*.cpp)
 
 # compile options
 
-add_compile_options(/W4)            # error handling
-add_compile_options(/permissive-)   # error handling
+add_compile_options(-O2)            # Performance
+add_compile_options(/W4)            # Error handling
+add_compile_options(/permissive-)   # Error handling
+
+# directories
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}/modules/neural_network/include
+)
 
 # building python modules
 

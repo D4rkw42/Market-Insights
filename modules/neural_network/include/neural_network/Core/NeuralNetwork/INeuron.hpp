@@ -6,6 +6,11 @@
 #include <type_traits>
 #include <vector>
 
+// Definições
+
+constexpr double STANDARD_MAX_ABSOLUTE_WEIGHT = 0.5f; // Weight padrão na inicialização
+constexpr double STANDAND_MAX_ABSOLUTE_BIAS = 0.5f;  // Bias padrão na inicialização
+
 class INeuron {
     public:
         // Quantidade de pesos
@@ -15,9 +20,11 @@ class INeuron {
         std::vector<double> weights;
 
         // Viés
-        double bias = 0.0f;
+        double bias;
 
         INeuron(int weightsNum);
+        INeuron(void) = default;
+
         ~INeuron() = default;
 
         virtual double Load(const std::vector<double>& input) const = 0;
@@ -25,7 +32,7 @@ class INeuron {
 
 template <class NeuronType>
 inline std::shared_ptr<INeuron> CreateNeuron(int weights) {
-    static_assert(std::is_base_of_v(INeuron, NeuronType), "NeuronType must be derived from INeuron.");
+    static_assert(std::is_base_of_v<INeuron, NeuronType>, "NeuronType must be derived from INeuron.");
 
     std::shared_ptr<NeuronType> neuron = std::make_shared<NeuronType>(weights);
     return std::dynamic_pointer_cast<INeuron>(neuron);

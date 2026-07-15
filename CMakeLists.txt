@@ -29,6 +29,9 @@ find_package(Python COMPONENTS Interpreter Development REQUIRED)
 # pybind11
 find_package(pybind11 CONFIG REQUIRED)
 
+# Effolkronium Random Library
+find_package(effolkronium_random CONFIG REQUIRED)
+
 # linker
 
 link_directories(${Python_LIBRARY_DIRS})
@@ -63,6 +66,10 @@ set_target_properties(
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/neural_network"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/neural_network"
 )
+
+# Other libs linkage
+
+target_link_libraries(neural_network PRIVATE effolkronium_random)
 
 # __init__.py template
 configure_file(

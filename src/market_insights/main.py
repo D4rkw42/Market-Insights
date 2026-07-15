@@ -1,13 +1,10 @@
 # An application built upon a LSTM neural network that creates insights about financial market for buying or selling operations
 # D4rkw42
 
-from neural_network import LSTM
+from neural_network import NeuralNetwork
 
 def main():
-    lstm = LSTM()
+    network = NeuralNetwork()
 
-    print(lstm.num)
-
-    lstm.set_num(20)
-
-    print(lstm.num)
+    name = network.metadata.name
+    fitness = network.metadata.fitness

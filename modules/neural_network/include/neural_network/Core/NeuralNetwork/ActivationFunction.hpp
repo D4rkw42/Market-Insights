@@ -15,6 +15,9 @@ class ActivationFunction {
         ActivationFunction(const ActFunc& function, const ActFunc& derivative)
             : function(function), derivative(derivative) {}
 
+        ActivationFunction(void) = default;
+        ~ActivationFunction() = default;
+
         inline double CalculateFromLaw(double x) {
             return this->function(x);
         }

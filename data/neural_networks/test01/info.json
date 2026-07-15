@@ -1,0 +1,11 @@
+{
+    "name": "test01",
+    "created-at": "2026-07-15",
+    "fitness": 0.87,
+    "architecture": [
+        {"neurons": 10, "type": "common", "activation-function": "sigmoid"},
+        {"neurons": 6, "type": "lstm", "activation-function": "sigmoid"},
+        {"neurons": 2, "type": "common", "activation-function": "gelu"}
+    ],
+    "pairs-trained": ["USDBRL", "EURUSD"]
+}

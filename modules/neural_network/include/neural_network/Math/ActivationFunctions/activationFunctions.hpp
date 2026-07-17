@@ -9,62 +9,62 @@
 
 // Sigmoid
 
-inline const double Sigmoid(double x) {
+inline const double Sigmoid(double x) noexcept {
     return 1.0 / (1 + std::exp(-x));
 }
 
-inline const double SigmoidDx(double x) {
+inline const double SigmoidDx(double x) noexcept {
     double sigX = Sigmoid(x);
     return sigX * (1 - sigX);
 }
 
 // Tangente Hiperbólica
 
-inline const double Tanh(double x) {
+inline const double Tanh(double x) noexcept {
     return std::tanh(x);
 }
 
-inline const double TanhDx(double x) {
+inline const double TanhDx(double x) noexcept {
     double tanhX = Tanh(x);
     return 1 - tanhX * tanhX;
 }
 
 // Função Identidade
 
-constexpr const double Identity(double x) {
+constexpr const double Identity(double x) noexcept {
     return x;
 }
 
-constexpr const double IdentityDx(double x) {
+constexpr const double IdentityDx(double x) noexcept {
     return 1;
 }
 
 // LeakyReLu
 
-inline const double LeakyReLu100(double x) {
+inline const double LeakyReLu100(double x) noexcept {
     return (x > 0)? x : x / 100;
 }
 
-inline const double LeakyReLu100Dx(double x) {
+inline const double LeakyReLu100Dx(double x) noexcept {
     return (x > 0)? 1 : 0.01f;
 }
 
-inline const double LeakyReLu1000(double x) {
+inline const double LeakyReLu1000(double x) noexcept {
     return (x > 0)? x : x / 1000;
 }
 
-inline const double LeakyReLu1000Dx(double x) {
+inline const double LeakyReLu1000Dx(double x) noexcept {
     return (x > 0)? 1 : 0.001f;
 }
 
 // Gaussian Error Linear Unit
 
-inline const double GELU(double x) {
+inline const double GELU(double x) noexcept {
     static const double a = std::sqrt(2.0 / PI);
     return (x * 0.5f) * (1 + Tanh(a * (x + 0.044715 * std::pow(x, 3))));
 }
 
-inline const double GELUDx(double x) {
+inline const double GELUDx(double x) noexcept {
     static const double a = std::sqrt(2.0 / PI);
     const double u = a * (x + 0.044715 * std::pow(x, 3));
 
@@ -75,7 +75,7 @@ inline const double GELUDx(double x) {
 
 // Softmax
 
-inline const std::vector<double> SoftMax(const std::vector<double>& logits) {
+inline const std::vector<double> SoftMax(const std::vector<double>& logits) noexcept {
     std::vector<double> vec = logits;
 
     double sum = 0;
@@ -91,7 +91,7 @@ inline const std::vector<double> SoftMax(const std::vector<double>& logits) {
     return vec;
 }
 
-inline const std::vector<double> SoftMaxDx(const std::vector<double>& softmax, const std::vector<double>& expected) {
+inline const std::vector<double> SoftMaxDx(const std::vector<double>& softmax, const std::vector<double>& expected) noexcept {
     std::vector<double> vec;
     vec.resize(softmax.size());
 

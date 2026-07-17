@@ -4,9 +4,9 @@ import typing
 __all__: list[str] = ['NeuralNetwork', 'NeuralNetworkArchitecture', 'NeuralNetworkArchitectureData', 'NeuralNetworkMetadata']
 class NeuralNetwork:
     metadata: NeuralNetworkMetadata
-    def back_propagation(self, arg0: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex], arg1: typing.SupportsFloat | typing.SupportsIndex) -> None:
+    def back_propagation(self, loss: typing.SupportsFloat | typing.SupportsIndex, learning_rate: typing.SupportsFloat | typing.SupportsIndex = 0.01) -> None:
         ...
-    def forward_pass(self, arg0: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex]) -> list[float]:
+    def forward_pass(self, inputs: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex]) -> list[float]:
         ...
 class NeuralNetworkArchitecture:
     pass

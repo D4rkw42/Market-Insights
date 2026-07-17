@@ -34,6 +34,6 @@ PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
     // Classe básica de rede neural
     py::class_<NeuralNetwork>(m, "NeuralNetwork")
         .def_readwrite("metadata", &NeuralNetwork::metadata)
-        .def("forward_pass", &NeuralNetwork::ForwardPass)
-        .def("back_propagation", &NeuralNetwork::BackPropagation);
+        .def("forward_pass", &NeuralNetwork::ForwardPass, py::arg("inputs"))
+        .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("loss"), py::arg("learning_rate") = 0.01);
 }

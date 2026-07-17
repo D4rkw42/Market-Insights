@@ -8,7 +8,7 @@ NeuralNetwork::NeuralNetwork(void) {}
 
 //
 
-std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs) const {
+std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs) {
     std::vector<double> vec, aux;
 
     // Inputs
@@ -31,6 +31,9 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
         for (int j = 0; j < neurons; ++j) {
             std::shared_ptr<INeuron> neuron = this->layers[i][j];
             aux[j] = neuron->Load(vec);
+
+            // Atualizando registro
+            this->data.layers[i][j].z = aux[j];
         }
 
         // Aplicando a função de ativação da camada
@@ -40,6 +43,9 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
 
         for (int j = 0; j < neurons; ++j) {
             aux[j] = actFunc.CalculateFromLaw(aux[j]);
+
+            // Atualizando registro
+            this->data.layers[i][j].a = aux[j];
         }
 
         vec = std::move(aux);
@@ -48,6 +54,6 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
     return vec;
 }
 
-void NeuralNetwork::BackPropagation(const std::vector<double>& expected, double learningRate) {
+void NeuralNetwork::BackPropagation(double loss, double learningRate) {
 
 }

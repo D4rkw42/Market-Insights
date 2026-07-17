@@ -8,3 +8,5 @@ def main():
 
     name = network.metadata.name
     fitness = network.metadata.fitness
+
+    network.forward_pass([1, 2, 3])

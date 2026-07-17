@@ -39,6 +39,20 @@ struct NeuralNetworkMetadata {
     NeuralNetworkArchitecture architecture;
 };
 
+// Histórico de execução da rede
+
+struct NeuralNetworkData {
+    struct NeuronData {
+        double z, a; // valor antes da ativação, valor depois da ativação, produzidos por um neurônio específico
+    };
+
+    // Valores armazenados por camada
+
+    std::vector<
+        std::vector<NeuronData>
+    > layers;
+};
+
 // Definição de uma rede neural geral
 
 class NeuralNetwork {
@@ -49,12 +63,15 @@ class NeuralNetwork {
         // Camadas da rede
         std::vector<NeuralNetworkLayer> layers;
 
+        // Valores gerados pela rede na última execução, por camada e neurônio
+        NeuralNetworkData data;
+
         NeuralNetwork(void);
         ~NeuralNetwork() = default;
 
         // Executa a rede e gera o resultado
-        std::vector<double> ForwardPass(const std::vector<double>& inputs) const;
+        std::vector<double> ForwardPass(const std::vector<double>& inputs);
 
         // Realiza o treinamento da rede
-        void BackPropagation(const std::vector<double>& expected, double learningRate = 0.01f);
+        void BackPropagation(double loss, double learningRate = 0.01f);
 };

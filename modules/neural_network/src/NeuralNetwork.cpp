@@ -58,9 +58,8 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
     return vec;
 }
 
-void NeuralNetwork::BackPropagation(const std::vector<double>& output, const std::vector<double>& expected, ErrorFunction& errorFunction) {
+void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const ErrorFunction& errorFunction) {
     std::vector<double> deltas, aux;
-    std::vector<double> lastOutput = output;
 
     // Calculando para a camada de saída
 
@@ -69,7 +68,7 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& output, const std
     NeuralNetworkLayer& layer = this->layers[lastLayerID];
 
     const std::string actFuncName = this->metadata.architecture[lastLayerID].activationFunction;
-    ActivationFunction actFunc = neuralNetworkActivationFunctions[actFuncName.c_str()];
+    const ActivationFunction& actFunc = GetActivationFunction(neuralNetworkActivationFunctions, actFuncName.c_str());
 
     deltas.resize(layer.size());
         
@@ -77,13 +76,12 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& output, const std
 
     for (int j = 0; j < layer.size(); ++j) {
         std::vector<double> x = this->data.layers[lastLayerID][j].x;
-
         double z = this->data.layers[lastLayerID][j].z;
         double a = this->data.layers[lastLayerID][j].a;
 
         // Delta para cada neurônio na camada atual
-        double gradient = errorFunction.CalculateFromDerivative(lastOutput[j], expected[j]);
-        deltas[j] = gradient * actFunc.CalculateFromDerivative(a);
+        double gradient = errorFunction.CalculateFromDerivative(a, expected[j]);
+        deltas[j] = gradient * actFunc.CalculateFromDerivative(z);
 
         // Atualizando pesos e bias por neurônio na camada atual
 
@@ -97,7 +95,7 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& output, const std
         NeuralNetworkLayer& layer = this->layers[i];
 
         const std::string actFuncName = this->metadata.architecture[i].activationFunction;
-        ActivationFunction actFunc = neuralNetworkActivationFunctions[actFuncName.c_str()];
+        const ActivationFunction& actFunc = GetActivationFunction(neuralNetworkActivationFunctions, actFuncName.c_str());
 
         NeuralNetworkLayer& posLayer = this->layers[i + 1];
 
@@ -107,9 +105,7 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& output, const std
 
         for (int j = 0; j < layer.size(); ++j) {
             std::vector<double> x = this->data.layers[i][j].x;
-            
             double z = this->data.layers[i][j].z;
-            double a = this->data.layers[i][j].a;
             
             double gradient = 0;
 
@@ -121,7 +117,7 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& output, const std
 
             // Calculando novos deltas
 
-            aux[j] = gradient * actFunc.CalculateFromDerivative(a);
+            aux[j] = gradient * actFunc.CalculateFromDerivative(z);
 
 
             // Atualizando pesos e bias para o neurônio atual

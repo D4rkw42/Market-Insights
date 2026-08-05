@@ -1,5 +1,7 @@
 // Definição de uma função de ativação
 
+#pragma once
+
 #include <functional>
 #include <map>
 
@@ -18,11 +20,11 @@ class ActivationFunction {
         ActivationFunction(void) = default;
         ~ActivationFunction() = default;
 
-        inline double CalculateFromLaw(double x) {
+        inline double CalculateFromLaw(double x) const {
             return this->function(x);
         }
 
-        inline double CalculateFromDerivative(double x) {
+        inline double CalculateFromDerivative(double x) const {
             return this->derivative(x);
         }
 };
@@ -32,6 +34,10 @@ using ActivationFunctionList = std::map<const char*, const ActivationFunction>;
 
 // Utils
 
-ActivationFunction CreateActivationFunction(const ActFunc& function, const ActFunc& derivative) noexcept {
+inline const ActivationFunction CreateActivationFunction(const ActFunc& function, const ActFunc& derivative) noexcept {
     return ActivationFunction(function, derivative);
+}
+
+inline const ActivationFunction& GetActivationFunction(ActivationFunctionList& list, const char* function) {
+    return list[function];
 }

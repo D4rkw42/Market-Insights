@@ -1,5 +1,7 @@
 // Definição de uma função de erro
 
+#pragma once
+
 #include <functional>
 #include <vector>
 #include <map>
@@ -22,11 +24,11 @@ class ErrorFunction {
         ErrorFunction(void) = default;
         ~ErrorFunction() = default;
 
-        inline double CalculateFromLaw(const std::vector<double>& output, const std::vector<double>& expected) {
+        inline double CalculateFromLaw(const std::vector<double>& output, const std::vector<double>& expected) const {
             return this->function(output, expected);
         }
 
-        inline double CalculateFromDerivative(double output, double expected) {
+        inline double CalculateFromDerivative(double output, double expected) const {
             return this->derivative(output, expected);
         }
 };
@@ -36,6 +38,10 @@ using ErrorFunctionList = std::map<const char*, const ErrorFunction>;
 
 // Utils
 
-ErrorFunction CreateErrorFunction(const ErrFunc& function, const ErrFuncDx& derivative) noexcept {
+inline const ErrorFunction CreateErrorFunction(const ErrFunc& function, const ErrFuncDx& derivative) noexcept {
     return ErrorFunction(function, derivative);
+}
+
+inline const ErrorFunction& GetErrorFunction(ErrorFunctionList& list, const char* function) {
+    return list[function];
 }

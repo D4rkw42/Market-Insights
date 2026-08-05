@@ -80,5 +80,5 @@ class NeuralNetwork {
         std::vector<double> ForwardPass(const std::vector<double>& inputs);
 
         // Realiza o treinamento da rede
-        void BackPropagation(const std::vector<double>& output, const std::vector<double>& expected, ErrorFunction& errorFunction);
+        void BackPropagation(const std::vector<double>& expected, const ErrorFunction& errorFunction);
 };

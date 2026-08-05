@@ -5,8 +5,6 @@
 #include <cmath>
 #include <vector>
 
-// OBS: as derivadas retornam deltas!!!!
-
 // Média do Erro Quadrático
 
 inline double MeanSquaredError(const std::vector<double>& output, const std::vector<double>& expected) noexcept {
@@ -21,7 +19,7 @@ inline double MeanSquaredError(const std::vector<double>& output, const std::vec
 }
 
 inline double MeanSquaredErrorDx(double output, double expected) noexcept {
-    return expected - output;
+    return -2 * (expected - output);
 }
 
 // Média do Erro Absoluto

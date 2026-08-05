@@ -8,8 +8,8 @@
 
 // Definições
 
-constexpr double STANDARD_MAX_ABSOLUTE_WEIGHT = 0.5f; // Weight padrão na inicialização
-constexpr double STANDAND_MAX_ABSOLUTE_BIAS = 0.5f;  // Bias padrão na inicialização
+constexpr double STANDARD_MAX_ABSOLUTE_WEIGHT = 0.1f; // Weight padrão na inicialização
+constexpr double STANDAND_MAX_ABSOLUTE_BIAS = 0.1f;  // Bias padrão na inicialização
 
 class INeuron {
     public:
@@ -28,6 +28,7 @@ class INeuron {
         ~INeuron() = default;
 
         virtual double Load(const std::vector<double>& input) const = 0;
+        virtual void UpdateWeightsAndBias(const std::vector<double>& lastInput, const double delta, const double learningRate) = 0;
 };
 
 template <class NeuronType>

@@ -7,6 +7,12 @@
 #include <string>
 
 #include "neural_network/Core/NeuralNetwork/INeuron.hpp"
+#include "neural_network/Core/NeuralNetwork/ErrorFunction.hpp"
+
+//
+
+// Taxa de aprendizado na rede nos treinamentos
+constexpr double LEARNING_RATE = 0.1f;
 
 // Definição de camada
 
@@ -43,6 +49,7 @@ struct NeuralNetworkMetadata {
 
 struct NeuralNetworkData {
     struct NeuronData {
+        std::vector<double> x; // valores dos últimos inputs nesse neurônio
         double z, a; // valor antes da ativação, valor depois da ativação, produzidos por um neurônio específico
     };
 
@@ -66,12 +73,12 @@ class NeuralNetwork {
         // Valores gerados pela rede na última execução, por camada e neurônio
         NeuralNetworkData data;
 
-        NeuralNetwork(void);
+        NeuralNetwork(void) = default;
         ~NeuralNetwork() = default;
 
         // Executa a rede e gera o resultado
         std::vector<double> ForwardPass(const std::vector<double>& inputs);
 
         // Realiza o treinamento da rede
-        void BackPropagation(double loss, double learningRate = 0.01f);
+        void BackPropagation(const std::vector<double>& output, const std::vector<double>& expected, ErrorFunction& errorFunction);
 };

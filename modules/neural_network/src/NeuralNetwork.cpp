@@ -43,7 +43,7 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
         // Aplicando a função de ativação da camada
 
         const std::string actFuncName = this->metadata.architecture[i].activationFunction;
-        ActivationFunction actFunc = neuralNetworkActivationFunctions[actFuncName.c_str()];
+        const ActivationFunction& actFunc = neuralNetworkActivationFunctions[actFuncName.c_str()];
 
         for (int j = 0; j < neurons; ++j) {
             aux[j] = actFunc.CalculateFromLaw(aux[j]);

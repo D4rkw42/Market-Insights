@@ -27,7 +27,7 @@ class INeuron {
 
         ~INeuron() = default;
 
-        virtual double Load(const std::vector<double>& input) const = 0;
+        virtual double Load(const std::vector<double>& input) = 0;
         virtual void UpdateWeightsAndBias(const std::vector<double>& lastInput, const double delta, const double learningRate) = 0;
 };
 

@@ -4,9 +4,4 @@
 from neural_network import NeuralNetwork
 
 def main():
-    network = NeuralNetwork()
-
-    name = network.metadata.name
-    fitness = network.metadata.fitness
-
-    network.forward_pass([1, 2, 3])
+    pass

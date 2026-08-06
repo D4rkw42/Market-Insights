@@ -6,7 +6,7 @@ BasicNeuron::BasicNeuron(int weightNum) : INeuron(weightNum) {}
 
 //
 
-double BasicNeuron::Load(const std::vector<double>& input) const {
+double BasicNeuron::Load(const std::vector<double>& input) {
     double z = 0;
 
     for (int i = 0; i < this->weightsNum; ++i) {

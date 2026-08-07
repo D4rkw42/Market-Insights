@@ -5,6 +5,7 @@
 #include <memory>
 #include <type_traits>
 #include <functional>
+#include <cstddef>
 #include <vector>
 #include <map>
 
@@ -26,6 +27,8 @@ struct INeuronActivationFunctions {
     INeuronActivationFunction Activate;
     INeuronActivationFunctionDx Derivative;
 };
+
+//
 
 class INeuron {
     public:
@@ -53,9 +56,14 @@ class INeuron {
         virtual double Load(const std::vector<double>& input) = 0;
         virtual double Learn(double learningRate, double gradient) = 0;
 
+        //
+        
+        virtual const std::vector<double> Weights(int ref) const = 0; // Retorna todos os pesos que estão associados a determinada ordem de entrada (neurônio anterior)
+        
         // Funções auxiliares
 
-        virtual const std::vector<double> Weights(int ref) const = 0; // Retorna todos os pesos que estão associados a determinada ordem de entrada (neurônio anterior)
+        virtual const std::vector<double> Serialize(void) const noexcept = 0; // Gera um buffer que representa todos os pesos e biases do neurônio
+        virtual void Deserialize(const std::vector<double>& buffer) noexcept = 0; // Carrega o buffer de pesos e biases do neurônio
 };
 
 template <class NeuronType>

@@ -2,6 +2,8 @@
 
 #include <neural_network/Core/NeuralNetwork/NeuralNetwork.hpp>
 
+#include <fstream>
+
 //
 
 std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs) {
@@ -103,9 +105,82 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const T
 // Utility
 
 bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const std::string& name) {
+    std::string param_file = std::string(NEURAL_NETWORKS_DIR) + name + "/" + "param.dat";
+    std::string info_file = std::string(NEURAL_NETWORKS_DIR) + name + "/" + "info.json";
 
+    std::ofstream info, param;
+
+    // Salvando informações da rede neural
+
+    info.open(info_file);
+
+    //
+
+
+
+    //
+
+    info.close();
+
+    // Salvando parâmetros da rede neural
+
+    param.open(param_file);
+
+    //
+
+    for (const NeuralNetworkLayer& layer : neuralNetwork->layers) {
+        for (const std::shared_ptr<INeuron>& neuron : layer) {
+            const std::vector<double> buffer = neuron->Serialize();
+
+            const char* buffer_char = reinterpret_cast<const char*>(buffer.data());
+            param.write(buffer_char, buffer.size());
+
+            param << '\n';
+        }
+    }
+
+    //
+
+    param.close();
+
+    //
+
+    return true;
 }
 
 std::shared_ptr<NeuralNetwork> NeuralNetwork::LoadNeuralNetwork(const std::string& name) {
+    std::shared_ptr<NeuralNetwork> neuralNetwork = CreateNeuralNetwork();
 
+    std::string param_file = std::string(NEURAL_NETWORKS_DIR) + name + "/" + "param.dat";
+    std::string info_file = std::string(NEURAL_NETWORKS_DIR) + name + "/" + "info.json";
+
+    std::ifstream info, param;
+
+    // Salvando informações da rede neural
+
+    info.open(info_file);
+
+    //
+
+
+
+    //
+
+    info.close();
+
+    // Salvando parâmetros da rede neural
+
+    param.open(param_file);
+
+    //
+
+    
+
+    //
+
+    param.close();
+
+    //
+
+    return neuralNetwork;
 }

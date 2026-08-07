@@ -148,3 +148,70 @@ double LSTMNeuron::Learn(double learningRate, double gradient) {
 const std::vector<double> LSTMNeuron::Weights(int ref) const {
     return std::vector<double> { this->uf[ref], this->ui[ref], this->uc[ref], this->weights[ref] };
 }
+
+//
+
+const std::vector<double> LSTMNeuron::Serialize(void) const noexcept {
+    std::vector<double> buffer;
+    
+    buffer.reserve(this->weightsNum * 4 + 8);
+
+    buffer.insert(buffer.end(), this->uf.begin(), this->uf.end());
+    buffer.insert(buffer.end(), this->ui.begin(), this->ui.end());
+    buffer.insert(buffer.end(), this->uc.begin(), this->uc.end());
+
+    buffer.insert(buffer.end(), this->weights.begin(), this->weights.end());
+
+    std::vector<double> hiddenWeightsAndBiases {
+        this->wf, this->wi, this->wc, this->wo,
+        this->bf, this->bi, this->bc, this->bias
+    };
+
+    buffer.insert(buffer.end(), hiddenWeightsAndBiases.begin(), hiddenWeightsAndBiases.end());
+
+    return buffer;
+}
+
+void LSTMNeuron::Deserialize(const std::vector<double>& buffer) noexcept {
+    int ref = 0;
+
+    // Pesos para as entradas
+
+    for (int i = 0; i < this->weightsNum; ++i) {
+        this->uf[i] = buffer[i + ref];
+    }
+
+    ref += this->weightsNum;
+
+    for (int i = 0; i < this->weightsNum; ++i) {
+        this->ui[i] = buffer[i + ref];
+    }
+
+    ref += this->weightsNum;
+
+    for (int i = 0; i < this->weightsNum; ++i) {
+        this->uc[i] = buffer[i + ref];
+    }
+
+    ref += this->weightsNum;
+
+    for (int i = 0; i < this->weightsNum; ++i) {
+        this->weights[i] = buffer[i + ref];
+    }
+
+    ref += this->weightsNum;
+
+    // Pesos para o estado oculto
+
+    this->wf = buffer[ref++];
+    this->wi = buffer[ref++];
+    this->wc = buffer[ref++];
+    this->wo = buffer[ref++];
+
+    // Biases
+
+    this->bf = buffer[ref++];
+    this->bi = buffer[ref++];
+    this->bc = buffer[ref++];
+    this->bias = buffer[ref++];
+}

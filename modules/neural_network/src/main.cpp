@@ -60,5 +60,10 @@ PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
     py::class_<NeuralNetwork, std::shared_ptr<NeuralNetwork>>(m, "NeuralNetwork")
         .def_readwrite("metadata", &NeuralNetwork::metadata)
         .def("forward_pass", &NeuralNetwork::ForwardPass, py::arg("inputs"))
-        .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("expected"), py::arg("training_error_function"));
+        .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("expected"), py::arg("training_error_function"))
+        .def_static("save_neural_network", &NeuralNetwork::SaveNeuralNetwork, py::arg("neural_network"), py::arg("name"))
+        .def_static("load_neural_network", &NeuralNetwork::LoadNeuralNetwork, py::arg("name"));
+
+    // Criação dinâmica de uma rede neural
+    m.def("create_neural_network", &CreateNeuralNetwork);
 }

@@ -42,4 +42,7 @@ class LSTMNeuron : public INeuron {
         double Learn(double learningRate, double gradient) override;
 
         const std::vector<double> Weights(int ref) const override;
+
+        const std::vector<double> Serialize(void) const noexcept override; // Gera um buffer que representa todos os pesos e biases do neurônio
+        void Deserialize(const std::vector<double>& buffer) noexcept override; // Carrega o buffer de pesos e biases do neurônio
 };

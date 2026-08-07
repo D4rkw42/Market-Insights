@@ -38,3 +38,25 @@ double BasicNeuron::Learn(double learningRate, double gradient) {
 const std::vector<double> BasicNeuron::Weights(int ref) const {
     return std::vector<double> { this->weights[ref] };
 }
+
+//
+
+const std::vector<double> BasicNeuron::Serialize(void) const noexcept {
+    std::vector<double> buffer;
+
+    buffer.reserve(this->weightsNum + 1);
+    buffer.insert(buffer.end(), this->weights.begin(), this->weights.end());
+    buffer.push_back(this->bias);
+
+    return buffer;
+}
+
+void BasicNeuron::Deserialize(const std::vector<double>& buffer) noexcept {
+    int i;
+
+    for (i = 0; i < this->weightsNum; ++i) {
+        this->weights[i] = buffer[i];
+    }
+
+    this->bias = buffer[i];
+}

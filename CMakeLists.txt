@@ -32,6 +32,9 @@ find_package(pybind11 CONFIG REQUIRED)
 # Effolkronium Random Library
 find_package(effolkronium_random CONFIG REQUIRED)
 
+# nlohmann Json
+find_package(nlohmann_json CONFIG REQUIRED)
+
 # linker
 
 link_directories(${Python_LIBRARY_DIRS})
@@ -69,7 +72,11 @@ set_target_properties(
 
 # Other libs linkage
 
-target_link_libraries(neural_network PRIVATE effolkronium_random)
+target_link_libraries(
+    neural_network PRIVATE
+    effolkronium_random
+    nlohmann_json::nlohmann_json
+)
 
 # __init__.py template
 configure_file(

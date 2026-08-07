@@ -86,7 +86,6 @@ class NeuralNetwork {
         static std::shared_ptr<NeuralNetwork> LoadNeuralNetwork(const std::string& name);
 
     private:
-
         // Adiciona umna camada de neurônios na rede
         template <class INeuronType>
         static void CreateNeuronLayer(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const INeuronActivationFunctions& functions, int amountOfNeurons, int amountOfInputs) {
@@ -104,3 +103,7 @@ class NeuralNetwork {
             neuralNetwork->layers.push_back(layer);
         }
 };
+
+inline std::shared_ptr<NeuralNetwork> CreateNeuralNetwork(void) {
+    return std::make_shared<NeuralNetwork>();
+}

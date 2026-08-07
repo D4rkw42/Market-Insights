@@ -1,6 +1,6 @@
 // Definição da interface de um neurônio na rede
 
-#include "neural_network/Core/NeuralNetwork/INeuron.hpp"
+#include <neural_network/Core/Neuron/INeuron.hpp>
 
 #include <effolkronium/random.hpp>
 

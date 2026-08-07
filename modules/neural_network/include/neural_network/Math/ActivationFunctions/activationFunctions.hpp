@@ -5,7 +5,7 @@
 #include <cmath>
 #include <vector>
 
-#include "neural_network/Math/math.hpp"
+#include <neural_network/Math/math.hpp>
 
 // Sigmoid
 

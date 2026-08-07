@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "neural_network/Core/NeuralNetwork/INeuron.hpp"
+#include <neural_network/Core/Neuron/INeuron.hpp>
 
 class LSTMNeuron : public INeuron {
     private:
@@ -23,15 +23,14 @@ class LSTMNeuron : public INeuron {
         std::vector<double> uc;
         double wc, bc;
 
-        // Cell States
-        double
-            ct = 0,
-            ct_1 = 0;
+        // Cell State (previous)
+        double ct_1 = 0;
 
-        // Hidden States
-        double 
-            ht = 0,
-            ht_1 = 0;
+        // Hidden State (previous)
+        double ht_1 = 0;
+
+        // Estados da célula para treinamento
+        double ft, it, ot, candidate;
 
     public:
         LSTMNeuron(int weightsNum);
@@ -40,5 +39,7 @@ class LSTMNeuron : public INeuron {
         virtual ~LSTMNeuron() = default;
 
         double Load(const std::vector<double>& input) override;
-        void UpdateWeightsAndBias(const std::vector<double>& lastInput, const double delta, const double learningRate) override;
+        double Learn(double learningRate, double gradient) override;
+
+        const std::vector<double> Weights(int ref) const override;
 };

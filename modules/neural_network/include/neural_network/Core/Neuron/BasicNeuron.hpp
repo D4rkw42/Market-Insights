@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "neural_network/Core/NeuralNetwork/INeuron.hpp"
+#include <neural_network/Core/Neuron/INeuron.hpp>
 
 class BasicNeuron : public INeuron {
     public:
@@ -12,5 +12,7 @@ class BasicNeuron : public INeuron {
         virtual ~BasicNeuron() = default;
 
         double Load(const std::vector<double>& input) override;
-        void UpdateWeightsAndBias(const std::vector<double>& lastInput, const double delta, const double learningRate) override;
+        double Learn(double learningRate, double gradient) override;
+
+        const std::vector<double> Weights(int ref) const override;
 };

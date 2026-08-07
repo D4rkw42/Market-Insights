@@ -4,10 +4,11 @@
 
 #include <memory>
 #include <vector>
+#include <map>
 #include <string>
+#include <functional>
 
-#include "neural_network/Core/NeuralNetwork/INeuron.hpp"
-#include "neural_network/Core/NeuralNetwork/ErrorFunction.hpp"
+#include <neural_network/Core/Neuron/INeuron.hpp>
 
 //
 
@@ -45,20 +46,13 @@ struct NeuralNetworkMetadata {
     NeuralNetworkArchitecture architecture;
 };
 
-// Histórico de execução da rede
+// Definição de uma função de erro
+using TrainingErrorFunction = std::function<double(const std::vector<double>&, const std::vector<double>&)>;
+using TrainingErrorFunctionDx = std::function<double(double, double)>;
 
-struct NeuralNetworkData {
-    struct NeuronData {
-        std::vector<double> x; // valores dos últimos inputs nesse neurônio
-        double z, a; // valor antes da ativação, valor depois da ativação, produzidos por um neurônio específico
-    };
-
-    // Valores armazenados por camada
-
-    std::vector<
-        std::vector<NeuronData>
-    > layers;
-};
+// Lista de funções de erro
+using TrainingErrorFunctionList = std::map<const char*, const TrainingErrorFunction>;
+using TrainingErrorFunctionDxList = std::map<const char*, const TrainingErrorFunctionDx>;
 
 // Definição de uma rede neural geral
 
@@ -70,9 +64,6 @@ class NeuralNetwork {
         // Camadas da rede
         std::vector<NeuralNetworkLayer> layers;
 
-        // Valores gerados pela rede na última execução, por camada e neurônio
-        NeuralNetworkData data;
-
         NeuralNetwork(void) = default;
         ~NeuralNetwork() = default;
 
@@ -80,5 +71,5 @@ class NeuralNetwork {
         std::vector<double> ForwardPass(const std::vector<double>& inputs);
 
         // Realiza o treinamento da rede
-        void BackPropagation(const std::vector<double>& expected, const ErrorFunction& errorFunction);
+        void BackPropagation(const std::vector<double>& expected, const TrainingErrorFunctionDx& trainingErrorFunction);
 };

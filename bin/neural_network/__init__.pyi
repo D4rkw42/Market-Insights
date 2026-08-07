@@ -1,15 +1,13 @@
 from __future__ import annotations
-from neural_network.Release.neural_network import ActivationFunction
-from neural_network.Release.neural_network import ActivationFunctionList
-from neural_network.Release.neural_network import ErrorFunction
-from neural_network.Release.neural_network import ErrorFunctionList
+from neural_network.Release.neural_network import INeuronActivationFunction
+from neural_network.Release.neural_network import INeuronActivationFunctionList
 from neural_network.Release.neural_network import NeuralNetwork
 from neural_network.Release.neural_network import NeuralNetworkArchitecture
 from neural_network.Release.neural_network import NeuralNetworkArchitectureData
 from neural_network.Release.neural_network import NeuralNetworkMetadata
-from neural_network.Release.neural_network import get_activation_function
-from neural_network.Release.neural_network import get_error_function
+from neural_network.Release.neural_network import TrainingErrorFunctionDx
+from neural_network.Release.neural_network import TrainingErrorFunctionDxList
 from . import Release
-__all__: list[str] = ['ActivationFunction', 'ActivationFunctionList', 'ErrorFunction', 'ErrorFunctionList', 'NeuralNetwork', 'NeuralNetworkArchitecture', 'NeuralNetworkArchitectureData', 'NeuralNetworkMetadata', 'Release', 'get_activation_function', 'get_error_function', 'neural_network_activation_functions', 'neural_network_error_functions']
-neural_network_activation_functions: dict  # value = {'sigmoid': <neural_network.Release.neural_network.ActivationFunction object>, 'leaky_relu100': <neural_network.Release.neural_network.ActivationFunction object>, 'leaky_relu1000': <neural_network.Release.neural_network.ActivationFunction object>, 'gelu': <neural_network.Release.neural_network.ActivationFunction object>, 'tanh': <neural_network.Release.neural_network.ActivationFunction object>, 'identity': <neural_network.Release.neural_network.ActivationFunction object>}
-neural_network_error_functions: dict  # value = {'mse': <neural_network.Release.neural_network.ErrorFunction object>, 'mae': <neural_network.Release.neural_network.ErrorFunction object>, 'cross-entropy': <neural_network.Release.neural_network.ErrorFunction object>}
+__all__: list[str] = ['ACTIVATION_FUNCTION_LIST', 'INeuronActivationFunction', 'INeuronActivationFunctionList', 'NeuralNetwork', 'NeuralNetworkArchitecture', 'NeuralNetworkArchitectureData', 'NeuralNetworkMetadata', 'Release', 'TRAINING_ERROR_FUNCTION_DX_LIST', 'TrainingErrorFunctionDx', 'TrainingErrorFunctionDxList']
+ACTIVATION_FUNCTION_LIST: dict  # value = {'sigmoid': <built-in method  of pybind11_builtins.pybind11_detail_function_record_v1_msvc_md_mscver19 object at 0x000001F9219705B0>, 'tanh': <built-in method  of pybind11_builtins.pybind11_detail_function_record_v1_msvc_md_mscver19 object at 0x000001F9219705D0>, 'identity': <built-in method  of pybind11_builtins.pybind11_detail_function_record_v1_msvc_md_mscver19 object at 0x000001F9219705F0>, 'leaky_relu100': <built-in method  of pybind11_builtins.pybind11_detail_function_record_v1_msvc_md_mscver19 object at 0x000001F921970610>, 'leaky_relu1000': <built-in method  of pybind11_builtins.pybind11_detail_function_record_v1_msvc_md_mscver19 object at 0x000001F921970630>, 'gelu': <built-in method  of pybind11_builtins.pybind11_detail_function_record_v1_msvc_md_mscver19 object at 0x000001F921970650>}
+TRAINING_ERROR_FUNCTION_DX_LIST: dict  # value = {'mse': <built-in method  of pybind11_builtins.pybind11_detail_function_record_v1_msvc_md_mscver19 object at 0x000001F921970670>, 'mae': <built-in method  of pybind11_builtins.pybind11_detail_function_record_v1_msvc_md_mscver19 object at 0x000001F921970690>, 'cross_entropy': <built-in method  of pybind11_builtins.pybind11_detail_function_record_v1_msvc_md_mscver19 object at 0x000001F9219706B0>}

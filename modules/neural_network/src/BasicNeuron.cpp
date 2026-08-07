@@ -1,27 +1,40 @@
 // Define um neurônio comum na rede neural
 
-#include "neural_network/Core/NeuralNetwork/Neurons/BasicNeuron.hpp"
+#include <neural_network/Core/Neuron/BasicNeuron.hpp>
 
 BasicNeuron::BasicNeuron(int weightNum) : INeuron(weightNum) {}
 
 //
 
 double BasicNeuron::Load(const std::vector<double>& input) {
-    double z = 0;
+    this->x = input;
+    this->z = 0;
 
     for (int i = 0; i < this->weightsNum; ++i) {
-        z += input[i] * this->weights[i];
+        this->z += this->weights[i] * input[i];
     }
 
-    return z + this->bias;
+    this->z += this->bias;
+    this->a = this->activation(this->z);
+
+    return this->a;
 }
 
-void BasicNeuron::UpdateWeightsAndBias(const std::vector<double>& lastInput, const double delta, const double learningRate) {
+double BasicNeuron::Learn(double learningRate, double gradient) {
+    double delta = this->derivative(this->z);
+
     // Atualizando pesos
+
     for (int i = 0; i < this->weightsNum; ++i) {
-        this->weights[i] -= learningRate * delta * lastInput[i];
+        this->weights[i] -= learningRate * delta * this->x[i];
     }
 
     // Atualizando bias
     this->bias -= learningRate * delta;
+
+    return delta;
+}
+
+const std::vector<double> BasicNeuron::Weights(int ref) const {
+    return std::vector<double> { this->weights[ref] };
 }

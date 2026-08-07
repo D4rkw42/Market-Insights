@@ -1,8 +1,6 @@
 // Definição genérica de Rede Neural
 
-#include "neural_network/Core/NeuralNetwork/NeuralNetwork.hpp"
-
-#include "neural_network/global.hpp"
+#include <neural_network/Core/NeuralNetwork/NeuralNetwork.hpp>
 
 //
 
@@ -10,21 +8,20 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
     std::vector<double> vec, aux;
 
     // Inputs
+    
+    int neurons = this->metadata.architecture[0].neurons;
 
-    vec.resize(inputs.size());
+    vec.resize(neurons);
 
-    for (int i = 0; i < inputs.size(); ++i) {
+    for (int i = 0; i < neurons; ++i) {
         std::shared_ptr<INeuron> neuron = this->layers[0][i];
         vec[i] = neuron->Load(std::vector<double> { inputs[i] });
-
-        // Copiando últimos valores da entrada
-        this->data.layers[0][i].x = inputs;
     }
 
     // Hidden & Outputs
 
     for (int i = 1; i < this->layers.size(); ++i) {
-        int neurons = this->metadata.architecture[i].neurons;
+        neurons = this->metadata.architecture[i].neurons;
         aux.resize(neurons);
 
         // Obtendo resultado de cada operação por camada
@@ -32,24 +29,6 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
         for (int j = 0; j < neurons; ++j) {
             std::shared_ptr<INeuron> neuron = this->layers[i][j];
             aux[j] = neuron->Load(vec);
-
-            // Atualizando registro
-            this->data.layers[i][j].z = aux[j];
-
-            // Atualizando registro da entrada
-            this->data.layers[i][j].x = vec;
-        }
-
-        // Aplicando a função de ativação da camada
-
-        const std::string actFuncName = this->metadata.architecture[i].activationFunction;
-        const ActivationFunction& actFunc = neuralNetworkActivationFunctions[actFuncName.c_str()];
-
-        for (int j = 0; j < neurons; ++j) {
-            aux[j] = actFunc.CalculateFromLaw(aux[j]);
-
-            // Atualizando registro
-            this->data.layers[i][j].a = aux[j];
         }
 
         vec = std::move(aux);
@@ -58,7 +37,7 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
     return vec;
 }
 
-void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const ErrorFunction& errorFunction) {
+void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const TrainingErrorFunctionDx& trainingErrorFunction) {
     std::vector<double> deltas, aux;
 
     // Calculando para a camada de saída
@@ -66,67 +45,56 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const E
     int lastLayerID = this->layers.size() - 1;
 
     NeuralNetworkLayer& layer = this->layers[lastLayerID];
+    int layerSize = layer.size();
 
-    const std::string actFuncName = this->metadata.architecture[lastLayerID].activationFunction;
-    const ActivationFunction& actFunc = GetActivationFunction(neuralNetworkActivationFunctions, actFuncName.c_str());
-
-    deltas.resize(layer.size());
+    deltas.resize(layerSize);
         
     // Percorrendo neurônios na camada de saída
 
-    for (int j = 0; j < layer.size(); ++j) {
-        std::vector<double> x = this->data.layers[lastLayerID][j].x;
-        double z = this->data.layers[lastLayerID][j].z;
-        double a = this->data.layers[lastLayerID][j].a;
+    for (int j = 0; j < layerSize; ++j) {
+        std::shared_ptr<INeuron> neuron = layer[j];
 
-        // Delta para cada neurônio na camada atual
-        double gradient = errorFunction.CalculateFromDerivative(a, expected[j]);
-        deltas[j] = gradient * actFunc.CalculateFromDerivative(z);
+        // Calculando gradiente de erro
+        double gradient = trainingErrorFunction(neuron->a, expected[j]);
 
         // Atualizando pesos e bias por neurônio na camada atual
-
-        std::shared_ptr<INeuron> neuron = layer[j];
-        neuron->UpdateWeightsAndBias(x, deltas[j], LEARNING_RATE);
+        deltas[j] = neuron->Learn(LEARNING_RATE, gradient);
     }
 
     // Calculando para as demais camadas
 
     for (int i = this->layers.size() - 2; i > 0; --i) {
+        NeuralNetworkLayer& posLayer = this->layers[i + 1];
         NeuralNetworkLayer& layer = this->layers[i];
 
-        const std::string actFuncName = this->metadata.architecture[i].activationFunction;
-        const ActivationFunction& actFunc = GetActivationFunction(neuralNetworkActivationFunctions, actFuncName.c_str());
+        int layerSize = layer.size();
 
-        NeuralNetworkLayer& posLayer = this->layers[i + 1];
-
-        aux.resize(layer.size());
+        aux.resize(layerSize);
 
         //
 
-        for (int j = 0; j < layer.size(); ++j) {
-            std::vector<double> x = this->data.layers[i][j].x;
-            double z = this->data.layers[i][j].z;
-            
+        for (int j = 0; j < layerSize; ++j) {        
+            std::shared_ptr<INeuron> neuron = layer[j];
+
             double gradient = 0;
 
-            // Calculando gradiente no neurônio com base nos deltas da camada posterior
+            // Calculando gradiente com base na camada posterior e deltas anteriores
 
             for (int k = 0; k < posLayer.size(); ++k) {
-                gradient += deltas[k] * posLayer[k]->weights[j];
+                // Um neurônio pode ter mais de um peso que se relaciona com a entrada
+                const std::vector<double> weights = posLayer[k]->Weights(j);
+                double partialGradient = 0;
+
+                for (int l = 0; l < weights.size(); ++l) {
+                    partialGradient += weights[l];
+                }
+
+                gradient += partialGradient * deltas[k];
             }
 
-            // Calculando novos deltas
-
-            aux[j] = gradient * actFunc.CalculateFromDerivative(z);
-
-
-            // Atualizando pesos e bias para o neurônio atual
-
-            std::shared_ptr<INeuron> neuron = layer[j];
-            neuron->UpdateWeightsAndBias(x, aux[j], LEARNING_RATE);
+            // Atualizando pesos e bias para o neurônio atual e obtendo delta
+            aux[j] = neuron->Learn(LEARNING_RATE, gradient);
         }
-
-        //
 
         deltas = aux;
     }

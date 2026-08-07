@@ -1,13 +1,23 @@
 #include <memory>
 
 #include <pybind11/pybind11.h>
+
 #include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 
-#include "neural_network/global.hpp"
+#include <pybind11/functional.h>
+#include <pybind11/chrono.h>
+#include <pybind11/complex.h>
 
-#include "neural_network/Core/NeuralNetwork/NeuralNetwork.hpp"
-#include "neural_network/Core/NeuralNetwork/ActivationFunction.hpp"
-#include "neural_network/Core/NeuralNetwork/ErrorFunction.hpp"
+#include <pybind11/operators.h>
+#include <pybind11/iostream.h>
+
+#include <pybind11/numpy.h>
+
+#include <neural_network/definitions.hpp>
+
+#include <neural_network/Core/NeuralNetwork/NeuralNetwork.hpp>
+#include <neural_network/Core/Neuron/INeuron.hpp>
 
 namespace py = pybind11;
 
@@ -19,21 +29,18 @@ namespace py = pybind11;
 /* Definição da biblioteca */
 
 PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
-    // Definições para função de erro e ativação
+    // Definições globais
 
-    py::class_<ActivationFunction, std::shared_ptr<ActivationFunction>>(m, "ActivationFunction");
-    py::class_<ErrorFunction, std::shared_ptr<ErrorFunction>>(m, "ErrorFunction");
+    py::class_<INeuronActivationFunction>(m, "INeuronActivationFunction");
+    py::class_<TrainingErrorFunctionDx>(m, "TrainingErrorFunctionDx");
 
-    py::class_<ActivationFunctionList>(m, "ActivationFunctionList");
-    py::class_<ErrorFunctionList>(m, "ErrorFunctionList");
+    py::class_<INeuronActivationFunctionList>(m, "INeuronActivationFunctionList");
+    py::class_<TrainingErrorFunctionDxList>(m, "TrainingErrorFunctionDxList");
 
-    m.attr("neural_network_activation_functions") = neuralNetworkActivationFunctions;
-    m.attr("neural_network_error_functions") = neuralNetworkErrorFunctions;
+    m.attr("ACTIVATION_FUNCTION_LIST") = ACTIVATION_FUNCTION_LIST;
+    m.attr("TRAINING_ERROR_FUNCTION_DX_LIST") = TRAINING_ERROR_FUNCTION_DX_LIST;
 
-    m.def("get_activation_function", &GetActivationFunction, py::arg("list"), py::arg("function"));
-    m.def("get_error_function", &GetErrorFunction, py::arg("list"), py::arg("function"));
-
-    // Metadados da rede neural (tipagem
+    // Metadados da rede neural (tipagem)
 
     py::class_<NeuralNetworkArchitectureData, std::shared_ptr<NeuralNetworkArchitectureData>>(m, "NeuralNetworkArchitectureData")
         .def_readwrite("neurons", &NeuralNetworkArchitectureData::neurons)
@@ -53,5 +60,5 @@ PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
     py::class_<NeuralNetwork, std::shared_ptr<NeuralNetwork>>(m, "NeuralNetwork")
         .def_readwrite("metadata", &NeuralNetwork::metadata)
         .def("forward_pass", &NeuralNetwork::ForwardPass, py::arg("inputs"))
-        .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("expected"), py::arg("error_function"));
+        .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("expected"), py::arg("training_error_function"));
 }

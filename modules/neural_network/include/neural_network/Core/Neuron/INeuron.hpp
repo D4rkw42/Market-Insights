@@ -21,6 +21,12 @@ using INeuronActivationFunctionDx = INeuronActivationFunction;
 using INeuronActivationFunctionList = std::map<const char*, const INeuronActivationFunction>;
 using INeuronActivationFunctionDxList = std::map<const char*, const INeuronActivationFunctionDx>;
 
+// Função de Ativação de sua derivada para operações no neurônio
+struct INeuronActivationFunctions {
+    INeuronActivationFunction Activate;
+    INeuronActivationFunctionDx Derivative;
+};
+
 class INeuron {
     public:
         // Quantidade de pesos
@@ -37,9 +43,7 @@ class INeuron {
         double z, a; // Última saída linear / última saída ativada
 
         // Função de ativação padrão do neurônio e sua derivada
-
-        INeuronActivationFunction activation;
-        INeuronActivationFunctionDx derivative;
+        INeuronActivationFunctions actFunc;
 
         INeuron(int weightsNum);
         INeuron(void) = default;

@@ -15,13 +15,13 @@ double BasicNeuron::Load(const std::vector<double>& input) {
     }
 
     this->z += this->bias;
-    this->a = this->activation(this->z);
+    this->a = this->actFunc.Activate(this->z);
 
     return this->a;
 }
 
 double BasicNeuron::Learn(double learningRate, double gradient) {
-    double delta = this->derivative(this->z);
+    double delta = this->actFunc.Derivative(this->z);
 
     // Atualizando pesos
 

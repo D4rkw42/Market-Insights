@@ -99,3 +99,13 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const T
         deltas = aux;
     }
 }
+
+// Utility
+
+bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const std::string& name) {
+
+}
+
+std::shared_ptr<NeuralNetwork> NeuralNetwork::LoadNeuralNetwork(const std::string& name) {
+
+}

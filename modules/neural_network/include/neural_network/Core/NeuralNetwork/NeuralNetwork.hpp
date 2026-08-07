@@ -7,10 +7,14 @@
 #include <map>
 #include <string>
 #include <functional>
+#include <type_traits>
 
 #include <neural_network/Core/Neuron/INeuron.hpp>
 
 //
+
+// Diretório das redes neurais
+constexpr const char* NEURAL_NETWORKS_DIR = "data/neural_networks/";
 
 // Taxa de aprendizado na rede nos treinamentos
 constexpr double LEARNING_RATE = 0.1f;
@@ -72,4 +76,31 @@ class NeuralNetwork {
 
         // Realiza o treinamento da rede
         void BackPropagation(const std::vector<double>& expected, const TrainingErrorFunctionDx& trainingErrorFunction);
+
+        // Utility
+
+        // Salva uma rede neural na memória
+        static bool SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const std::string& name);
+
+        // Carrega uma rede neural. Retorna nullptr caso não exista
+        static std::shared_ptr<NeuralNetwork> LoadNeuralNetwork(const std::string& name);
+
+    private:
+
+        // Adiciona umna camada de neurônios na rede
+        template <class INeuronType>
+        static void CreateNeuronLayer(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const INeuronActivationFunctions& functions, int amountOfNeurons, int amountOfInputs) {
+            NeuralNetworkLayer layer;
+
+            for (int i = 0; i < amountOfNeurons; ++i) {
+                std::shared_ptr<INeuron> neuron = CreateNeuron<INeuronType>(amountOfInputs);
+
+                // Adicionando funções de ativação
+                neuron->actFunc = functions;
+
+                layer.push_back(neuron);
+            }
+
+            neuralNetwork->layers.push_back(layer);
+        }
 };

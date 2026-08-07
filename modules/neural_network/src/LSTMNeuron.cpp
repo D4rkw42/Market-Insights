@@ -76,7 +76,7 @@ double LSTMNeuron::Load(const std::vector<double>& input) {
 
     // Hidden State
 
-    double ht = this->ot * this->activation(ct);
+    double ht = this->ot * this->actFunc.Activate(ct);
     this->ht_1 = ht;
 
     // Atualizando informações
@@ -90,8 +90,8 @@ double LSTMNeuron::Load(const std::vector<double>& input) {
 double LSTMNeuron::Learn(double learningRate, double gradient) {
     // Calculando todos os gradientes parciais
 
-    double outputGr = gradient * this->activation(this->ct_1);
-    double cellStGr = gradient * this->ot * this->derivative(this->ct_1);
+    double outputGr = gradient * this->actFunc.Activate(this->ct_1);
+    double cellStGr = gradient * this->ot * this->actFunc.Derivative(this->ct_1);
 
     double inputGr = cellStGr * this->candidate;
     double candidateGr = cellStGr * this->it;

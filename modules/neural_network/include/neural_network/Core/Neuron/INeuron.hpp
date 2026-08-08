@@ -28,6 +28,12 @@ struct INeuronActivationFunctions {
     INeuronActivationFunctionDx Derivative;
 };
 
+// Estrutura de bytes que representa os pesos e biases do neurônio
+struct INeuronBuffer {
+    const double* bytes;
+    std::size_t size;
+};
+
 //
 
 class INeuron {
@@ -62,8 +68,8 @@ class INeuron {
         
         // Funções auxiliares
 
-        virtual const std::vector<double> Serialize(void) const noexcept = 0; // Gera um buffer que representa todos os pesos e biases do neurônio
-        virtual void Deserialize(const std::vector<double>& buffer) noexcept = 0; // Carrega o buffer de pesos e biases do neurônio
+        virtual const INeuronBuffer Serialize(void) const noexcept = 0; // Gera um buffer que representa todos os pesos e biases do neurônio
+        virtual void Deserialize(const double* buffer) noexcept = 0; // Carrega o buffer de pesos e biases do neurônio
 };
 
 template <class NeuronType>

@@ -11,6 +11,10 @@ using random = effolkronium::random_static;
 LSTMNeuron::LSTMNeuron(int weightsNum) : INeuron(weightsNum) {
     // Inicialização de pesos 
 
+    this->uf.resize(weightsNum);
+    this->ui.resize(weightsNum);
+    this->uc.resize(weightsNum);
+
     for (int i = 0; i < weightsNum; ++i) {
         this->uf[i] = random::get<double>(-STANDARD_MAX_ABSOLUTE_WEIGHT, STANDARD_MAX_ABSOLUTE_WEIGHT);
         this->ui[i] = random::get<double>(-STANDARD_MAX_ABSOLUTE_WEIGHT, STANDARD_MAX_ABSOLUTE_WEIGHT);
@@ -151,7 +155,8 @@ const std::vector<double> LSTMNeuron::Weights(int ref) const {
 
 //
 
-const std::vector<double> LSTMNeuron::Serialize(void) const noexcept {
+const INeuronBuffer LSTMNeuron::Serialize(void) const noexcept {
+    double* mem = new double[this->weightsNum * 4 + 8];
     std::vector<double> buffer;
     
     buffer.reserve(this->weightsNum * 4 + 8);
@@ -169,10 +174,14 @@ const std::vector<double> LSTMNeuron::Serialize(void) const noexcept {
 
     buffer.insert(buffer.end(), hiddenWeightsAndBiases.begin(), hiddenWeightsAndBiases.end());
 
-    return buffer;
+    for (int i = 0; i < buffer.size(); ++i) {
+        mem[i] = buffer[i];
+    }
+
+    return INeuronBuffer { mem, buffer.size() };
 }
 
-void LSTMNeuron::Deserialize(const std::vector<double>& buffer) noexcept {
+void LSTMNeuron::Deserialize(const double* buffer) noexcept {
     int ref = 0;
 
     // Pesos para as entradas

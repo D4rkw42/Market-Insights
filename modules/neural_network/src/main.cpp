@@ -14,10 +14,10 @@
 
 #include <pybind11/numpy.h>
 
-#include <neural_network/Core/NeuralNetwork/definitions.hpp>
-
 #include <neural_network/Core/NeuralNetwork/NeuralNetwork.hpp>
 #include <neural_network/Core/Neuron/INeuron.hpp>
+
+#include <neural_network/Math/ErrorFunctions/errorFunctions.hpp>
 
 namespace py = pybind11;
 
@@ -29,17 +29,6 @@ namespace py = pybind11;
 /* Definição da biblioteca */
 
 PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
-    // Definições globais
-
-    py::class_<INeuronActivationFunction>(m, "INeuronActivationFunction");
-    py::class_<TrainingErrorFunctionDx>(m, "TrainingErrorFunctionDx");
-
-    py::class_<INeuronActivationFunctionList>(m, "INeuronActivationFunctionList");
-    py::class_<TrainingErrorFunctionDxList>(m, "TrainingErrorFunctionDxList");
-
-    m.attr("ACTIVATION_FUNCTION_LIST") = ACTIVATION_FUNCTION_LIST;
-    m.attr("TRAINING_ERROR_FUNCTION_DX_LIST") = TRAINING_ERROR_FUNCTION_DX_LIST;
-
     // Metadados da rede neural (tipagem)
 
     py::class_<NeuralNetworkArchitectureData, std::shared_ptr<NeuralNetworkArchitectureData>>(m, "NeuralNetworkArchitectureData")
@@ -66,4 +55,10 @@ PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
 
     // Criação dinâmica de uma rede neural
     m.def("create_neural_network", &CreateNeuralNetwork);
+
+    // Exportação das funções de erro
+
+    m.def("mean_squared_error", &MeanSquaredError, py::arg("output"), py::arg("expected"));
+    m.def("mean_absolute_error", &MeanAbsoluteError, py::arg("output"), py::arg("expected"));
+    m.def("cross_entropy", &CrossEntropy, py::arg("output"), py::arg("expected"));
 }

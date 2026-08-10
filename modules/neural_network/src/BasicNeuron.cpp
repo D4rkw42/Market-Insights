@@ -42,18 +42,20 @@ const std::vector<double> BasicNeuron::Weights(int ref) const {
 //
 
 const INeuronBuffer BasicNeuron::Serialize(void) const noexcept {
-    double* mem = new double[this->weightsNum + 1];
-    std::vector<double> buffer;
-    
-    buffer.reserve(this->weightsNum + 1);
-    buffer.insert(buffer.end(), this->weights.begin(), this->weights.end());
-    buffer.push_back(this->bias);
+    int elements = this->weightsNum + 1;
 
-    for (int i = 0; i < buffer.size(); ++i) {
-        mem[i] = buffer[i];
+    double* buffer = new double[elements];
+    std::size_t size = elements * sizeof(double);
+    
+    int i;
+
+    for (i = 0; i < this->weightsNum; ++i) {
+        buffer[i] = this->weights[i];
     }
 
-    return INeuronBuffer { mem, buffer.size() };
+    buffer[i] = this->bias;
+
+    return INeuronBuffer { buffer, size };
 }
 
 void BasicNeuron::Deserialize(const double* buffer) noexcept {

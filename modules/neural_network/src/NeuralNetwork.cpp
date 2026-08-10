@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <cstdlib>
 
 #include <nlohmann/json.hpp>
 
@@ -13,6 +14,35 @@
 #include <neural_network/Core/Neuron/LSTMNeuron.hpp>
 
 using Json = nlohmann::json;
+
+// Buffer para leitura e escrita de dados (pesos e bias) da rede neural
+
+constexpr int NEURON_BUFFER_DOUBLES_COUNT = 4096; // Quantidade máxima de doubles guardados por linha
+constexpr std::size_t RW_STREAM_NEURON_BUFFER_SIZE = NEURON_BUFFER_DOUBLES_COUNT * sizeof(double); // Memória necessária para guardar a quantia de doubles
+
+// Buffer de leitura e escrita de dados da rede
+
+class StreamNeuronBuffer {
+    private:
+        char* buffer = nullptr;
+
+    public:
+        StreamNeuronBuffer(void) = default;
+
+        inline char* Get(void) noexcept {
+            if (this->buffer == nullptr) {
+                this->buffer = new char[RW_STREAM_NEURON_BUFFER_SIZE];
+            }
+
+            return this->buffer;
+        }
+
+        ~StreamNeuronBuffer() {
+            delete[] this->buffer;
+        }
+};
+
+static StreamNeuronBuffer streamNeuronBuffer;
 
 //
 
@@ -24,8 +54,9 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
     int neurons = this->metadata.architecture[0].neurons;
 
     vec.resize(neurons);
+    vec = { 0 };
 
-    for (int i = 0; i < neurons; ++i) {
+    for (int i = 0; i < inputs.size(); ++i) {
         std::shared_ptr<INeuron> neuron = this->layers[0][i];
         vec[i] = neuron->Load(std::vector<double> { inputs[i] });
     }
@@ -182,13 +213,25 @@ bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neur
     for (const NeuralNetworkLayer& layer : neuralNetwork->layers) {
         for (const std::shared_ptr<INeuron>& neuron : layer) {
             const INeuronBuffer buffer = neuron->Serialize();
+            
+            // Estipulando o buffer bruto de memória e tamanho seguro para evitar overflow
 
-            const char* buffer_char = reinterpret_cast<const char*>(buffer.bytes);
-            param.write(buffer_char, buffer.size);
+            std::size_t buffer_size = (buffer.size > RW_STREAM_NEURON_BUFFER_SIZE)? RW_STREAM_NEURON_BUFFER_SIZE : buffer.size;
+            const void* buffer_char = reinterpret_cast<const void*>(buffer.bytes);
+
+            // Copia o buffer do neurônio para um buffer fixo de caracteres
+
+            std::memcpy(
+                reinterpret_cast<void*>(streamNeuronBuffer.Get()),
+                buffer_char, buffer_size
+            );
+
+            // Copia o buffer de caracteres no arquivo. Todo neurônio ocupa a mesma quantidade de caracteres por linha.
+
+            param.write(streamNeuronBuffer.Get(), RW_STREAM_NEURON_BUFFER_SIZE);
+            param.flush();
 
             delete[] buffer.bytes;
-
-            param << '\n';
         }
     }
 
@@ -272,17 +315,15 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::LoadNeuralNetwork(const std::strin
 
     // Deserializando os pesos para cada camada
 
-    char streamLine[2048];
-
     for (NeuralNetworkLayer& layer : neuralNetwork->layers) {
         for (const std::shared_ptr<INeuron>& neuron : layer) {
             // Validando se há linhas disponíveis para criação da rede. Caso não tenha, retorna a rede neural construída
-            if (!param.getline(streamLine, 2048, '\n')) {
+            if (!param.read(streamNeuronBuffer.Get(), RW_STREAM_NEURON_BUFFER_SIZE)) {
                 param.close();
                 return neuralNetwork;
             }
 
-            const double* buffer = reinterpret_cast<const double*>(&streamLine[0]);
+            const double* buffer = reinterpret_cast<const double*>(streamNeuronBuffer.Get());
             neuron->Deserialize(buffer); // o neurônio deserializa os dados para seus pesos e biases
         }
     }

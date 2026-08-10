@@ -61,9 +61,9 @@ pybind11_add_module(neural_network MODULE ${NEURAL_NETWORK_SOURCES})
 
 set_target_properties(
     neural_network PROPERTIES
-    PREFIX ""           # no "lib" prefix
-    SUFFIX ".pyd"       # extension
-    OUTPUT_NAME "neural_network"  # output file name
+    PREFIX ""                       # no "lib" prefix
+    SUFFIX ".pyd"                   # extension
+    OUTPUT_NAME "neural_network"    # output file name
 
     # target output location
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/neural_network"
@@ -79,6 +79,7 @@ target_link_libraries(
 )
 
 # __init__.py template
+
 configure_file(
     ${CMAKE_SOURCE_DIR}/cmake/neural_network.__init__.py.in
     ${CMAKE_SOURCE_DIR}/bin/neural_network/__init__.py

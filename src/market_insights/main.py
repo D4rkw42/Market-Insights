@@ -4,5 +4,4 @@
 from neural_network import NeuralNetwork, create_neural_network
 
 def main():
-    neural_network = NeuralNetwork.load_neural_network("test01")
-    NeuralNetwork.save_neural_network(neural_network, "test01")
+    pass

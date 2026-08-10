@@ -156,29 +156,53 @@ const std::vector<double> LSTMNeuron::Weights(int ref) const {
 //
 
 const INeuronBuffer LSTMNeuron::Serialize(void) const noexcept {
-    double* mem = new double[this->weightsNum * 4 + 8];
-    std::vector<double> buffer;
+    int elements = this->weightsNum * 4 + 8;
+
+    double* buffer = new double[elements];
+    std::size_t size = elements * sizeof(double);
     
-    buffer.reserve(this->weightsNum * 4 + 8);
+    int ref = 0;
+    int i;
 
-    buffer.insert(buffer.end(), this->uf.begin(), this->uf.end());
-    buffer.insert(buffer.end(), this->ui.begin(), this->ui.end());
-    buffer.insert(buffer.end(), this->uc.begin(), this->uc.end());
-
-    buffer.insert(buffer.end(), this->weights.begin(), this->weights.end());
-
-    std::vector<double> hiddenWeightsAndBiases {
-        this->wf, this->wi, this->wc, this->wo,
-        this->bf, this->bi, this->bc, this->bias
-    };
-
-    buffer.insert(buffer.end(), hiddenWeightsAndBiases.begin(), hiddenWeightsAndBiases.end());
-
-    for (int i = 0; i < buffer.size(); ++i) {
-        mem[i] = buffer[i];
+    for (i = 0; i < this->weightsNum; ++i) {
+        int id = i + ref;
+        buffer[id] = this->uf[i];
     }
 
-    return INeuronBuffer { mem, buffer.size() };
+    ref += this->weightsNum;
+
+    for (i = 0; i < this->weightsNum; ++i) {
+        int id = i + ref;
+        buffer[id] = this->ui[i];
+    }
+
+    ref += this->weightsNum;
+
+    for (i = 0; i < this->weightsNum; ++i) {
+        int id = i + ref;
+        buffer[id] = this->uc[i];
+    }
+
+    ref += this->weightsNum;
+
+    for (i = 0; i < this->weightsNum; ++i) {
+        int id = i + ref;
+        buffer[id] = this->weights[i];
+    }
+
+    ref += this->weightsNum;
+
+    buffer[ref++] = this->wf;
+    buffer[ref++] = this->wi;
+    buffer[ref++] = this->wc;
+    buffer[ref++] = this->wo;
+
+    buffer[ref++] = this->bf;
+    buffer[ref++] = this->bi;
+    buffer[ref++] = this->bc;
+    buffer[ref++] = this->bias;
+
+    return INeuronBuffer { buffer, size };
 }
 
 void LSTMNeuron::Deserialize(const double* buffer) noexcept {

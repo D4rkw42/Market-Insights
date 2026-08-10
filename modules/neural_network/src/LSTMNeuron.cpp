@@ -37,6 +37,8 @@ LSTMNeuron::LSTMNeuron(int weightsNum) : INeuron(weightsNum) {
 double LSTMNeuron::Load(const std::vector<double>& input) {
     // Calculando a Forget Gate
 
+    this->ft = 0;
+
     for (int i = 0; i < this->weightsNum; ++i) {
         this->ft += this->uf[i] * input[i];
     }
@@ -46,6 +48,8 @@ double LSTMNeuron::Load(const std::vector<double>& input) {
 
     // Calculando a Input Gate
 
+    this->it = 0;
+    
     for (int i = 0; i < this->weightsNum; ++i) {
         this->it += this->ui[i] * input[i];
     }
@@ -70,6 +74,8 @@ double LSTMNeuron::Load(const std::vector<double>& input) {
     this->ct_1 = ct;
 
     // Output Gate
+
+    this->ot = 0;
 
     for (int i = 0; i < this->weightsNum; ++i) {
         this->ot += this->weights[i] * input[i];

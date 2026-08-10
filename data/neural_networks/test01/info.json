@@ -1,17 +1,17 @@
 {
     "architecture": [
         {
-            "activation_function": "sigmoid",
+            "activation_function": "identity",
             "neurons": 2,
             "type": "basic"
         },
         {
-            "activation_function": "sigmoid",
-            "neurons": 6,
-            "type": "lstm"
+            "activation_function": "gelu",
+            "neurons": 4,
+            "type": "basic"
         },
         {
-            "activation_function": "gelu",
+            "activation_function": "tanh",
             "neurons": 2,
             "type": "basic"
         }

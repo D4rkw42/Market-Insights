@@ -214,7 +214,7 @@ bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neur
 
     // Salvando parâmetros da rede neural
 
-    param.open(param_file);
+    param.open(param_file, std::ios::binary);
 
     //
 
@@ -293,7 +293,7 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::LoadNeuralNetwork(const std::strin
 
     // Salvando parâmetros da rede neural
 
-    param.open(param_file);
+    param.open(param_file, std::ios::binary);
 
     //
 

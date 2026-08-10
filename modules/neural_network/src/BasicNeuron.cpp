@@ -42,7 +42,7 @@ const std::vector<double> BasicNeuron::Weights(int ref) const {
 //
 
 const INeuronBuffer BasicNeuron::Serialize(void) const noexcept {
-    int elements = this->weightsNum + 1;
+    std::size_t elements = this->weightsNum + 1;
 
     double* buffer = new double[elements];
     std::size_t size = elements * sizeof(double);

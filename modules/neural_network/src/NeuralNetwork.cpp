@@ -15,7 +15,7 @@ using Json = nlohmann::json;
 
 // Buffer para leitura e escrita de dados (pesos e bias) da rede neural
 
-constexpr int NEURON_BUFFER_DOUBLES_COUNT = 4096; // Quantidade máxima de doubles guardados por linha
+constexpr std::size_t NEURON_BUFFER_DOUBLES_COUNT = 4096; // Quantidade máxima de doubles guardados por linha
 constexpr std::size_t RW_STREAM_NEURON_BUFFER_SIZE = NEURON_BUFFER_DOUBLES_COUNT * sizeof(double); // Memória necessária para guardar a quantia de doubles
 
 // Buffer de leitura e escrita de dados da rede
@@ -25,18 +25,24 @@ class StreamNeuronBuffer {
         char* buffer = nullptr;
 
     public:
-        StreamNeuronBuffer(void) = default;
+        StreamNeuronBuffer(void) {
+            this->buffer = new char[RW_STREAM_NEURON_BUFFER_SIZE];
+        }
+        
+        ~StreamNeuronBuffer() {
+            delete[] this->buffer;
+        }
 
         inline char* Get(void) noexcept {
-            if (this->buffer == nullptr) {
-                this->buffer = new char[RW_STREAM_NEURON_BUFFER_SIZE];
-            }
-
             return this->buffer;
         }
 
-        ~StreamNeuronBuffer() {
-            delete[] this->buffer;
+        inline void FlushBuffer(void) noexcept {
+            if (!this->buffer) {
+                return;
+            }
+
+            std::memset(this->buffer, 0, RW_STREAM_NEURON_BUFFER_SIZE);
         }
 };
 
@@ -216,22 +222,21 @@ bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neur
         for (const std::shared_ptr<INeuron>& neuron : layer) {
             const INeuronBuffer buffer = neuron->Serialize();
             
-            // Estipulando o buffer bruto de memória e tamanho seguro para evitar overflow
-
+            // Estipulando o tamanho seguro para evitar overflow
             std::size_t buffer_size = (buffer.size > RW_STREAM_NEURON_BUFFER_SIZE)? RW_STREAM_NEURON_BUFFER_SIZE : buffer.size;
-            const void* buffer_char = reinterpret_cast<const void*>(buffer.bytes);
 
             // Copia o buffer do neurônio para um buffer fixo de caracteres
 
+            streamNeuronBuffer.FlushBuffer();
+
             std::memcpy(
-                reinterpret_cast<void*>(streamNeuronBuffer.Get()),
-                buffer_char, buffer_size
+                streamNeuronBuffer.Get(),
+                buffer.bytes, buffer_size
             );
 
             // Copia o buffer de caracteres no arquivo. Todo neurônio ocupa a mesma quantidade de caracteres por linha.
 
             param.write(streamNeuronBuffer.Get(), RW_STREAM_NEURON_BUFFER_SIZE);
-            param.flush();
 
             delete[] buffer.bytes;
         }
@@ -321,6 +326,9 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::LoadNeuralNetwork(const std::strin
     for (NeuralNetworkLayer& layer : neuralNetwork->layers) {
         for (const std::shared_ptr<INeuron>& neuron : layer) {
             // Validando se há linhas disponíveis para criação da rede. Caso não tenha, retorna a rede neural construída
+
+            streamNeuronBuffer.FlushBuffer();
+
             if (!param.read(streamNeuronBuffer.Get(), RW_STREAM_NEURON_BUFFER_SIZE)) {
                 param.close();
                 return neuralNetwork;

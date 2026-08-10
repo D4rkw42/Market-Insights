@@ -156,7 +156,7 @@ const std::vector<double> LSTMNeuron::Weights(int ref) const {
 //
 
 const INeuronBuffer LSTMNeuron::Serialize(void) const noexcept {
-    int elements = this->weightsNum * 4 + 8;
+    std::size_t elements = this->weightsNum * 4 + 8;
 
     double* buffer = new double[elements];
     std::size_t size = elements * sizeof(double);
@@ -200,7 +200,7 @@ const INeuronBuffer LSTMNeuron::Serialize(void) const noexcept {
     buffer[ref++] = this->bf;
     buffer[ref++] = this->bi;
     buffer[ref++] = this->bc;
-    buffer[ref++] = this->bias;
+    buffer[ref] = this->bias;
 
     return INeuronBuffer { buffer, size };
 }
@@ -246,5 +246,5 @@ void LSTMNeuron::Deserialize(const double* buffer) noexcept {
     this->bf = buffer[ref++];
     this->bi = buffer[ref++];
     this->bc = buffer[ref++];
-    this->bias = buffer[ref++];
+    this->bias = buffer[ref];
 }

@@ -21,7 +21,7 @@ double BasicNeuron::Load(const std::vector<double>& input) {
 }
 
 double BasicNeuron::Learn(double learningRate, double gradient) {
-    double delta = this->actFunc.Derivative(this->z);
+    double delta = this->actFunc.Derivative(this->z) * gradient;
 
     // Atualizando pesos
 

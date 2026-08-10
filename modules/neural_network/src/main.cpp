@@ -14,7 +14,7 @@
 
 #include <pybind11/numpy.h>
 
-#include <neural_network/definitions.hpp>
+#include <neural_network/Core/NeuralNetwork/definitions.hpp>
 
 #include <neural_network/Core/NeuralNetwork/NeuralNetwork.hpp>
 #include <neural_network/Core/Neuron/INeuron.hpp>
@@ -60,7 +60,7 @@ PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
     py::class_<NeuralNetwork, std::shared_ptr<NeuralNetwork>>(m, "NeuralNetwork")
         .def_readwrite("metadata", &NeuralNetwork::metadata)
         .def("forward_pass", &NeuralNetwork::ForwardPass, py::arg("inputs"))
-        .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("expected"), py::arg("training_error_function"))
+        .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("expected"), py::arg("train_func_id"), py::arg("learning_rate"))
         .def_static("save_neural_network", &NeuralNetwork::SaveNeuralNetwork, py::arg("neural_network"), py::arg("name"))
         .def_static("load_neural_network", &NeuralNetwork::LoadNeuralNetwork, py::arg("name"));
 

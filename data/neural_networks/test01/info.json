@@ -7,6 +7,11 @@
         },
         {
             "activation_function": "sigmoid",
+            "neurons": 6,
+            "type": "lstm"
+        },
+        {
+            "activation_function": "gelu",
             "neurons": 2,
             "type": "basic"
         }

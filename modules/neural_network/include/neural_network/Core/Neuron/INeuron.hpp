@@ -7,22 +7,18 @@
 #include <functional>
 #include <cstddef>
 #include <vector>
+#include <string>
 #include <map>
+
+#include <neural_network/Core/NeuralNetwork/definitions.hpp>
 
 // Definições
 
 constexpr double STANDARD_MAX_ABSOLUTE_WEIGHT = 0.1f; // Weight padrão na inicialização
 constexpr double STANDAND_MAX_ABSOLUTE_BIAS = 0.1f;  // Bias padrão na inicialização
 
-// Definição de função de ativação e sua derivada
-using INeuronActivationFunction = std::function<double(double)>;
-using INeuronActivationFunctionDx = INeuronActivationFunction;
+// Funções de ativação e derivadas do neurônio
 
-// Definição da lista de funções de ativação
-using INeuronActivationFunctionList = std::map<const char*, const INeuronActivationFunction>;
-using INeuronActivationFunctionDxList = std::map<const char*, const INeuronActivationFunctionDx>;
-
-// Função de Ativação de sua derivada para operações no neurônio
 struct INeuronActivationFunctions {
     INeuronActivationFunction Activate;
     INeuronActivationFunctionDx Derivative;
@@ -51,7 +47,7 @@ class INeuron {
         std::vector<double> x; // Última entrada
         double z, a; // Última saída linear / última saída ativada
 
-        // Função de ativação padrão do neurônio e sua derivada
+        // Função de ativação do neurônio e sua derivada
         INeuronActivationFunctions actFunc;
 
         INeuron(int weightsNum);

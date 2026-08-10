@@ -8,8 +8,6 @@
 
 #include <nlohmann/json.hpp>
 
-#include <neural_network/definitions.hpp>
-
 #include <neural_network/Core/Neuron/BasicNeuron.hpp>
 #include <neural_network/Core/Neuron/LSTMNeuron.hpp>
 
@@ -50,17 +48,19 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
     std::vector<double> vec, aux;
 
     // Inputs
-    
+
     int neurons = this->metadata.architecture[0].neurons;
 
     vec.resize(neurons);
     vec = { 0 };
 
-    for (int i = 0; i < inputs.size(); ++i) {
+    int safeInpSize = (neurons < inputs.size())? neurons : inputs.size();
+
+    for (int i = 0; i < safeInpSize; ++i) {
         std::shared_ptr<INeuron> neuron = this->layers[0][i];
         vec[i] = neuron->Load(std::vector<double> { inputs[i] });
     }
-
+    
     // Hidden & Outputs
 
     for (int i = 1; i < this->layers.size(); ++i) {
@@ -80,7 +80,7 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
     return vec;
 }
 
-void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const TrainingErrorFunctionDx& trainingErrorFunction) {
+void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const std::string& trainFuncID, double learningRate) {
     std::vector<double> deltas, aux;
 
     // Calculando para a camada de saída
@@ -94,19 +94,21 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const T
         
     // Percorrendo neurônios na camada de saída
 
+    const TrainingErrorFunctionDx& trainFunc = TRAINING_ERROR_FUNCTION_DX_LIST[trainFuncID];
+
     for (int j = 0; j < layerSize; ++j) {
         std::shared_ptr<INeuron> neuron = layer[j];
 
         // Calculando gradiente de erro
-        double gradient = trainingErrorFunction(neuron->a, expected[j]);
+        double gradient = trainFunc(neuron->a, expected[j]);
 
         // Atualizando pesos e bias por neurônio na camada atual
-        deltas[j] = neuron->Learn(LEARNING_RATE, gradient);
+        deltas[j] = neuron->Learn(learningRate, gradient);
     }
 
     // Calculando para as demais camadas
 
-    for (int i = this->layers.size() - 2; i > 0; --i) {
+    for (int i = lastLayerID - 1; i >= 0; --i) {
         NeuralNetworkLayer& posLayer = this->layers[i + 1];
         NeuralNetworkLayer& layer = this->layers[i];
 
@@ -136,7 +138,7 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const T
             }
 
             // Atualizando pesos e bias para o neurônio atual e obtendo delta
-            aux[j] = neuron->Learn(LEARNING_RATE, gradient);
+            aux[j] = neuron->Learn(learningRate, gradient);
         }
 
         deltas = aux;
@@ -295,19 +297,20 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::LoadNeuralNetwork(const std::strin
     int amountOfInputs = 1;
 
     for (const NeuralNetworkArchitectureData& data : metadata.architecture) {
-        const char* activationFunctionName = data.activationFunction.c_str();
+        const std::string actFuncID = data.activationFunction;
         const int amountOfNeurons = data.neurons; 
         const std::string neuronType = data.type;
 
-        INeuronActivationFunctions functions;
-
-        functions.Activate = ACTIVATION_FUNCTION_LIST[activationFunctionName];
-        functions.Derivative = ACTIVATION_FUNCTION_DX_LIST[activationFunctionName];
-
         if (neuronType == "basic") {
-            NeuralNetwork::CreateNeuronLayer<BasicNeuron>(neuralNetwork, functions, amountOfNeurons, amountOfInputs);
+            NeuralNetwork::CreateNeuronLayer<BasicNeuron>(
+                neuralNetwork, actFuncID,
+                amountOfNeurons, amountOfInputs
+            );
         } else if (neuronType == "lstm") {
-            NeuralNetwork::CreateNeuronLayer<LSTMNeuron>(neuralNetwork, functions, amountOfNeurons, amountOfInputs);
+            NeuralNetwork::CreateNeuronLayer<LSTMNeuron>(
+                neuralNetwork, actFuncID,
+                amountOfNeurons, amountOfInputs
+            );
         }
 
         amountOfInputs = amountOfNeurons;

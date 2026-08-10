@@ -9,15 +9,13 @@
 #include <functional>
 #include <type_traits>
 
+#include <neural_network/Core/NeuralNetwork/definitions.hpp>
 #include <neural_network/Core/Neuron/INeuron.hpp>
 
 //
 
 // Diretório das redes neurais
 constexpr const char* NEURAL_NETWORKS_DIR = "data/neural_networks/";
-
-// Taxa de aprendizado na rede nos treinamentos
-constexpr double LEARNING_RATE = 0.1f;
 
 // Definição de camada
 
@@ -50,14 +48,6 @@ struct NeuralNetworkMetadata {
     NeuralNetworkArchitecture architecture;
 };
 
-// Definição de uma função de erro
-using TrainingErrorFunction = std::function<double(const std::vector<double>&, const std::vector<double>&)>;
-using TrainingErrorFunctionDx = std::function<double(double, double)>;
-
-// Lista de funções de erro
-using TrainingErrorFunctionList = std::map<const char*, const TrainingErrorFunction>;
-using TrainingErrorFunctionDxList = std::map<const char*, const TrainingErrorFunctionDx>;
-
 // Definição de uma rede neural geral
 
 class NeuralNetwork {
@@ -75,7 +65,7 @@ class NeuralNetwork {
         std::vector<double> ForwardPass(const std::vector<double>& inputs);
 
         // Realiza o treinamento da rede
-        void BackPropagation(const std::vector<double>& expected, const TrainingErrorFunctionDx& trainingErrorFunction);
+        void BackPropagation(const std::vector<double>& expected, const std::string& trainFuncID, double learningRate);
 
         // Utility
 
@@ -88,14 +78,14 @@ class NeuralNetwork {
     private:
         // Adiciona umna camada de neurônios na rede
         template <class INeuronType>
-        static void CreateNeuronLayer(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const INeuronActivationFunctions& functions, int amountOfNeurons, int amountOfInputs) {
+        static void CreateNeuronLayer(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const std::string& actFuncID, int amountOfNeurons, int amountOfInputs) {
             NeuralNetworkLayer layer;
 
             for (int i = 0; i < amountOfNeurons; ++i) {
                 std::shared_ptr<INeuron> neuron = CreateNeuron<INeuronType>(amountOfInputs);
 
-                // Adicionando funções de ativação
-                neuron->actFunc = functions;
+                neuron->actFunc.Activate = ACTIVATION_FUNCTION_LIST[actFuncID];
+                neuron->actFunc.Derivative = ACTIVATION_FUNCTION_DX_LIST[actFuncID];
 
                 layer.push_back(neuron);
             }

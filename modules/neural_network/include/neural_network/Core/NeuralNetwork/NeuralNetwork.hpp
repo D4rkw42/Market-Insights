@@ -21,6 +21,9 @@ constexpr const char* NEURAL_NETWORKS_DIR = "data/neural_networks/";
 
 using NeuralNetworkLayer = std::vector<std::shared_ptr<INeuron>>;
 
+// Taxa de aprendizado padrão da rede
+constexpr double DEFAULT_LEARNING_RATE = 0.01;
+
 // Definição dos metadados da rede
 
 // Estrutura de metadados
@@ -65,12 +68,14 @@ class NeuralNetwork {
         std::vector<double> ForwardPass(const std::vector<double>& inputs);
 
         // Realiza o treinamento da rede
-        void BackPropagation(const std::vector<double>& expected, const std::string& trainFuncID, double learningRate);
+        void BackPropagation(const std::vector<double>& expected, const std::string& trainFuncID, double learningRate = DEFAULT_LEARNING_RATE);
 
         // Utility
 
         // Salva uma rede neural na memória
+
         static bool SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const std::string& name);
+        static bool SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neuralNetwork);
 
         // Carrega uma rede neural. Retorna nullptr caso não exista
         static std::shared_ptr<NeuralNetwork> LoadNeuralNetwork(const std::string& name);

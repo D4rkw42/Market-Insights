@@ -50,7 +50,7 @@ class INeuron {
         // Função de ativação do neurônio e sua derivada
         INeuronActivationFunctions actFunc;
 
-        INeuron(int weightsNum);
+        explicit INeuron(int weightsNum);
         INeuron(void) = default;
 
         ~INeuron() = default;

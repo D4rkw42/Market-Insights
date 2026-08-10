@@ -17,6 +17,7 @@
 #include <neural_network/Core/NeuralNetwork/NeuralNetwork.hpp>
 #include <neural_network/Core/Neuron/INeuron.hpp>
 
+#include <neural_network/Math/ActivationFunctions/activationFunctions.hpp>
 #include <neural_network/Math/ErrorFunctions/errorFunctions.hpp>
 
 namespace py = pybind11;
@@ -49,8 +50,9 @@ PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
     py::class_<NeuralNetwork, std::shared_ptr<NeuralNetwork>>(m, "NeuralNetwork")
         .def_readwrite("metadata", &NeuralNetwork::metadata)
         .def("forward_pass", &NeuralNetwork::ForwardPass, py::arg("inputs"))
-        .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("expected"), py::arg("train_func_id"), py::arg("learning_rate"))
-        .def_static("save_neural_network", &NeuralNetwork::SaveNeuralNetwork, py::arg("neural_network"), py::arg("name"))
+        .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("expected"), py::arg("train_func_id"), py::arg("learning_rate") = DEFAULT_LEARNING_RATE)
+        .def_static("save_neural_network", py::overload_cast<const std::shared_ptr<NeuralNetwork>&, const std::string&>(&NeuralNetwork::SaveNeuralNetwork), py::arg("neural_network"), py::arg("name"))
+        .def_static("save_neural_network", py::overload_cast<const std::shared_ptr<NeuralNetwork>&>(&NeuralNetwork::SaveNeuralNetwork), py::arg("neural_network"))
         .def_static("load_neural_network", &NeuralNetwork::LoadNeuralNetwork, py::arg("name"));
 
     // Criação dinâmica de uma rede neural
@@ -61,4 +63,8 @@ PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
     m.def("mean_squared_error", &MeanSquaredError, py::arg("output"), py::arg("expected"));
     m.def("mean_absolute_error", &MeanAbsoluteError, py::arg("output"), py::arg("expected"));
     m.def("cross_entropy", &CrossEntropy, py::arg("output"), py::arg("expected"));
+
+    // Exportando função SoftMax
+
+    m.def("softmax", &SoftMax, py::arg("logits"));
 }

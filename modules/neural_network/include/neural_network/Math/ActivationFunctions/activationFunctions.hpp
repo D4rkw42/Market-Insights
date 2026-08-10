@@ -85,7 +85,7 @@ inline std::vector<double> SoftMax(const std::vector<double>& logits) noexcept {
     }
 
     for (int i = 0; i < vec.size(); ++i) {
-        vec[i] = vec[i] / sum;
+        vec[i] = std::exp(vec[i]) / sum;
     }
 
     return vec;

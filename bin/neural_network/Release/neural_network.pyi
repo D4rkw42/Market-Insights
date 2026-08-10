@@ -1,16 +1,21 @@
 from __future__ import annotations
 import collections.abc
 import typing
-__all__: list[str] = ['NeuralNetwork', 'NeuralNetworkArchitecture', 'NeuralNetworkArchitectureData', 'NeuralNetworkMetadata', 'create_neural_network', 'cross_entropy', 'mean_absolute_error', 'mean_squared_error']
+__all__: list[str] = ['NeuralNetwork', 'NeuralNetworkArchitecture', 'NeuralNetworkArchitectureData', 'NeuralNetworkMetadata', 'create_neural_network', 'cross_entropy', 'mean_absolute_error', 'mean_squared_error', 'softmax']
 class NeuralNetwork:
     metadata: NeuralNetworkMetadata
     @staticmethod
     def load_neural_network(name: str) -> NeuralNetwork:
         ...
     @staticmethod
+    @typing.overload
     def save_neural_network(neural_network: NeuralNetwork, name: str) -> bool:
         ...
-    def back_propagation(self, expected: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex], train_func_id: str, learning_rate: typing.SupportsFloat | typing.SupportsIndex) -> None:
+    @staticmethod
+    @typing.overload
+    def save_neural_network(neural_network: NeuralNetwork) -> bool:
+        ...
+    def back_propagation(self, expected: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex], train_func_id: str, learning_rate: typing.SupportsFloat | typing.SupportsIndex = 0.01) -> None:
         ...
     def forward_pass(self, inputs: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex]) -> list[float]:
         ...
@@ -53,4 +58,6 @@ def cross_entropy(output: collections.abc.Sequence[typing.SupportsFloat | typing
 def mean_absolute_error(output: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex], expected: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex]) -> float:
     ...
 def mean_squared_error(output: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex], expected: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex]) -> float:
+    ...
+def softmax(logits: collections.abc.Sequence[typing.SupportsFloat | typing.SupportsIndex]) -> list[float]:
     ...

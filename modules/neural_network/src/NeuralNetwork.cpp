@@ -171,12 +171,17 @@ bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neur
     if (!std::filesystem::exists(info_path)) {
         std::filesystem::create_directories(info_path);
     }
+    
+    info.open(info_file);
+    param.open(param_file, std::ios::binary);
+
+    // Erro ao abrir/criar os arquivos
+
+    if (!(info.is_open() && param.is_open())) {
+        return false;
+    }
 
     // Salvando informações da rede neural
-
-    info.open(info_file);
-
-    //
 
     const NeuralNetworkMetadata& metadata = neuralNetwork->metadata;
 
@@ -214,10 +219,6 @@ bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neur
 
     // Salvando parâmetros da rede neural
 
-    param.open(param_file, std::ios::binary);
-
-    //
-
     for (const NeuralNetworkLayer& layer : neuralNetwork->layers) {
         for (const std::shared_ptr<INeuron>& neuron : layer) {
             const INeuronBuffer buffer = neuron->Serialize();
@@ -251,19 +252,34 @@ bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neur
     return true;
 }
 
+bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neuralNetwork) {
+    return NeuralNetwork::SaveNeuralNetwork(neuralNetwork, neuralNetwork->metadata.name);
+}
+
 std::shared_ptr<NeuralNetwork> NeuralNetwork::LoadNeuralNetwork(const std::string& name) {
     std::shared_ptr<NeuralNetwork> neuralNetwork = CreateNeuralNetwork();
 
     std::string param_file = std::string(NEURAL_NETWORKS_DIR) + name + "/" + "param.dat";
     std::string info_file = std::string(NEURAL_NETWORKS_DIR) + name + "/" + "info.json";
 
+    // Verificando se os arquivos existem
+
+    if (!(std::filesystem::exists(info_file) && std::filesystem::exists(param_file))) {
+        return nullptr;
+    }
+
     std::ifstream info, param;
 
-    // Salvando informações da rede neural
-
     info.open(info_file);
+    param.open(param_file, std::ios::binary);
 
-    //
+    // Verificando se o arquivo foi aberto com sucesso
+
+    if (!(info.is_open() && param.is_open())) {
+        return nullptr;
+    }
+
+    // Salvando informações da rede neural
 
     Json jObject;
     info >> jObject;
@@ -292,10 +308,6 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::LoadNeuralNetwork(const std::strin
     info.close();
 
     // Salvando parâmetros da rede neural
-
-    param.open(param_file, std::ios::binary);
-
-    //
 
     // Construindo as camadas de neurônios na memória
 

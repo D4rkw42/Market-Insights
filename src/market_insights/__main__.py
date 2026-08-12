@@ -6,6 +6,9 @@ import sys
 from PySide6 import QtWidgets
 from PySide6.QtCore import QTimer, QElapsedTimer
 
+from market_insights.settings import *
+from market_insights.globals import *
+
 from market_insights.interface import Application
 
 # Definições do aplicativo
@@ -18,7 +21,7 @@ def main():
 
     # Inicialização do aplicativo
 
-    application.Init()
+    application.init()
 
     # Definição do loop principal
 
@@ -29,7 +32,7 @@ def main():
 
     def timeout_callback():
         dt = clock.restart() * 0.001
-        application.Update(dt)
+        application.load(dt)
 
     timer.setInterval(APP_UPDATE_COUNTDOWN)
     timer.timeout.connect(timeout_callback)
@@ -44,7 +47,7 @@ def main():
 
     # Finalização do aplicativo
 
-    application.Quit()
+    application.quit()
 
 if __name__ == "__main__":
     main()

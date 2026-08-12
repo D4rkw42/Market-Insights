@@ -1,4 +1,4 @@
 # Definições de interface
 
-from .Application import *
-from .Interface import *
+from market_insights.interface.Interface import *
+from market_insights.interface.Application import *

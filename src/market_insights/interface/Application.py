@@ -2,7 +2,11 @@
 
 from PySide6 import QtWidgets, QtGui
 
-from .Interface import Interface
+from market_insights.settings import *
+from market_insights.globals import *
+
+from market_insights.core.binance import Binance
+from market_insights.interface import Interface
 
 # Defnições do aplicativo
 
@@ -38,15 +42,20 @@ class Application(QtWidgets.QMainWindow):
 
     # Inicialização do app
 
-    def Init(self):
-        pass
+    def init(self):
+        if OPERATION_MODE == "develop":
+            print("[LOG] Running app in development mode.")
+
+        # Inicializa conexão com os endpoints da Binance
+
+        binance.init()
 
     # Finalização do app
 
-    def Quit(self):
+    def quit(self):
         pass
 
     # Execução de funções internas
 
-    def Update(self, dt: float):
+    def load(self, dt: float):
         pass

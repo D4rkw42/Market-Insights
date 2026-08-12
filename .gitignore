@@ -13,7 +13,7 @@ __pycache__
 
 *.pyc
 
-# CMake
+# CMake & Nuitka
 /build
 
 # Binaries
@@ -26,3 +26,6 @@ __pycache__
 
 # Storage
 /logs
+
+# Environment
+.env

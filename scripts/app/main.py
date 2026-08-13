@@ -14,8 +14,8 @@ COMPILE_COMMAND = f"poetry run python -m nuitka --msvc=latest --standalone --fol
 # Compila o projeto Client com Nuitka
 
 def export_app():
-    print(f"[scripts.build_app] Compiling {APP_EXECUTABLE_NAME}...")
-    print("[scripts.build_app]: " + COMPILE_COMMAND)
+    print(f"[scripts.app] Compiling {APP_EXECUTABLE_NAME}...")
+    print("[scripts.app]: " + COMPILE_COMMAND)
 
     # Verifica se a pasta de build existe
 
@@ -26,12 +26,12 @@ def export_app():
 
     os.system(COMPILE_COMMAND)
 
-    print("[scripts.build_app] Compiled successfully!")
+    print("[scripts.app] Compiled successfully!")
 
 # Executa o projeto Client compilado
 
 def run_app():
-    print(f"[scripts.build_app]: Starting {APP_EXECUTABLE_NAME}.exe...")
+    print(f"[scripts.app]: Starting {APP_EXECUTABLE_NAME}.exe...")
     subprocess.call([f"./{BUILD_DIR}/{COMPILED_PROJECT}/Market-Insights"])
 
 if __name__ == "__main__":

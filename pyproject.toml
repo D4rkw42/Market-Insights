@@ -16,18 +16,21 @@ dependencies = [
 packages = [
     { include = "market_insights", from = "src" },
     { include = "neural_network", from = "bin" },
-    { include = "build_modules", from = "scripts" },
-    { include = "build_app", from = "scripts" }
+    { include = "app", from = "scripts" },
+    { include = "modules", from = "scripts" },
+    { include = "project", from = "scripts" }
 ]
 
 [tool.poetry.scripts]
 start = "market_insights.__main__:main" # runs de project
 
 [tool.poetry.plugins."console_scripts"]
-build = "build_modules.main:build"
-clear = "build_modules.main:clear"
-export = "build_app.main:export_app"
-app = "build_app.main:run_app"
+build = "modules.main:build"
+clear = "modules.main:clear"
+export = "app.main:export_app"
+app = "app.main:run_app"
+reset = "project.main:reset"
+update = "project.main:update"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

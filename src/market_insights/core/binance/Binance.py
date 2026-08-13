@@ -2,9 +2,6 @@
 
 import os
 
-from binance_sdk_spot.spot import Spot
-from binance_common.configuration import ConfigurationRestAPI
-
 from market_insights.settings import *
 from market_insights.utils.public import *
 
@@ -17,16 +14,5 @@ class Binance:
         self.api_key = os.getenv("API_KEY") if app_is_prod_mode() else os.getenv("TESTNET_API_KEY")
         self.secret_key = os.getenv("SECRET_KEY") if app_is_prod_mode() else os.getenv("TESTNET_SECRET_KEY")
 
-        print(self.api_key, self.secret_key)
-
-        rest_api_configuration = ConfigurationRestAPI(
-            api_key = self.api_key,
-            private_key = self.secret_key,
-            base_path = self.api_url
-        )
-
-        self.client = Spot(config_rest_api = rest_api_configuration)
-
-    # Dados da conta vinculada
-    def get_account(self):
-        return self.client.rest_api.get_account()
+        if not (self.api_url and self.api_key and self.secret_key):
+            raise RuntimeError("Couldn't load ENV vars about Binance connection")

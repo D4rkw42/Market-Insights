@@ -5,8 +5,9 @@ from PySide6 import QtWidgets, QtGui
 from market_insights.settings import *
 from market_insights.globals import *
 
-from market_insights.core.binance import Binance
 from market_insights.interface import Interface
+
+from datetime import datetime
 
 # Defnições do aplicativo
 

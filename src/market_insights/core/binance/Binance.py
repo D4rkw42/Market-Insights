@@ -5,6 +5,8 @@ import os
 from requests import get, post
 from typing import *
 
+from math import trunc
+
 from datetime import datetime
 
 from market_insights.settings import *
@@ -158,14 +160,43 @@ class BinanceSymbolInfo:
         self.order_types = order_types
         self.permissions = permissions
 
+# Representação de candlesticks
+
 class BinanceKline:
     def __init__(self, open: float, high: float, low: float, close: float):
-        self.open = open    # Preço de abertura
-        self.high = high    # Preço da sombra superior
-        self.low = low      # Preço da sombra inferior
-        self.close = close  # Preço do fechamento
+        self.open = BinanceKlineNumber(open)    # Preço de abertura
+        self.high = BinanceKlineNumber(high)    # Preço da sombra superior
+        self.low = BinanceKlineNumber(low )     # Preço da sombra inferior
+        self.close = BinanceKlineNumber(close)  # Preço do fechamento
 
     # Transforma a representaçao do candle em lista
 
     def to_list(self) -> list[float]:
-        return [self.open, self.high, self.low, self.close]
+        return [
+            self.open.mantissa,
+            self.open.expoent,
+            self.high.mantissa,
+            self.high.expoent,
+            self.low.mantissa,
+            self.low.expoent,
+            self.close.mantissa,
+            self.close.expoent
+        ]
+
+# Representação de um candle com mantissa expoente
+
+class BinanceKlineNumber:
+    def __init__(self, value: float):
+        # Tranformação explícita em float
+        value = float(value)
+        scientific_notation = f"{value:e}"
+
+        # Transformação em notação científica
+        splitted_sc = scientific_notation.split("e")
+
+        # Obtém a mantissa e expoente
+        self.mantissa = float(splitted_sc[0])
+        self.expoent = float(splitted_sc[1])
+
+    def get_value(self):
+        return self.mantissa * pow(10, self.expoent)

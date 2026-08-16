@@ -7,17 +7,6 @@ from market_insights.globals import *
 
 from market_insights.interface import Interface
 
-from datetime import datetime
-
-# Defnições do aplicativo
-
-# Dimennsões mínimas da janela
-
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
-
-APP_NAME = "Market Insights" # Nome exibido na janela
-
 class Application(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()

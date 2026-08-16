@@ -42,7 +42,7 @@ struct NeuralNetworkMetadata {
     std::string createdAt;
 
     // Capacidade nominal de acerto da rede
-    float fitness;
+    float fitness = 0;
 
     // Pares de moedas já treinados
     std::vector<std::string> pairsTrained;
@@ -80,7 +80,6 @@ class NeuralNetwork {
         // Carrega uma rede neural. Retorna nullptr caso não exista
         static std::shared_ptr<NeuralNetwork> LoadNeuralNetwork(const std::string& name);
 
-    private:
         // Adiciona umna camada de neurônios na rede
         template <class INeuronType>
         static void CreateNeuronLayer(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const std::string& actFuncID, int amountOfNeurons, int amountOfInputs) {
@@ -99,6 +98,6 @@ class NeuralNetwork {
         }
 };
 
-inline std::shared_ptr<NeuralNetwork> CreateNeuralNetwork(void) {
+inline std::shared_ptr<NeuralNetwork> CreateNeuralNetwork() {
     return std::make_shared<NeuralNetwork>();
 }

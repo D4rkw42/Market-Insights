@@ -25,6 +25,7 @@ __pycache__
 *.lib
 
 # Storage
+/data
 /logs
 
 # Environment

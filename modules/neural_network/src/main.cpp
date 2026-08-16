@@ -15,6 +15,7 @@
 #include <pybind11/numpy.h>
 
 #include <neural_network/Core/NeuralNetwork/NeuralNetwork.hpp>
+#include <neural_network/Core/NeuralNetwork/NeuralNetworkSchema.hpp>
 #include <neural_network/Core/Neuron/INeuron.hpp>
 
 #include <neural_network/Math/ActivationFunctions/activationFunctions.hpp>
@@ -48,6 +49,7 @@ PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
 
     // Classe básica de rede neural
     py::class_<NeuralNetwork, std::shared_ptr<NeuralNetwork>>(m, "NeuralNetwork")
+        .def(py::init<>())
         .def_readwrite("metadata", &NeuralNetwork::metadata)
         .def("forward_pass", &NeuralNetwork::ForwardPass, py::arg("inputs"))
         .def("back_propagation", &NeuralNetwork::BackPropagation, py::arg("expected"), py::arg("train_func_id"), py::arg("learning_rate") = DEFAULT_LEARNING_RATE)
@@ -55,16 +57,25 @@ PYBIND11_MODULE(MODULE_NAME, m, MODULE_GIL_MODE) {
         .def_static("save_neural_network", py::overload_cast<const std::shared_ptr<NeuralNetwork>&>(&NeuralNetwork::SaveNeuralNetwork), py::arg("neural_network"))
         .def_static("load_neural_network", &NeuralNetwork::LoadNeuralNetwork, py::arg("name"));
 
-    // Criação dinâmica de uma rede neural
-    m.def("create_neural_network", &CreateNeuralNetwork);
-
     // Exportação das funções de erro
 
     m.def("mean_squared_error", &MeanSquaredError, py::arg("output"), py::arg("expected"));
     m.def("mean_absolute_error", &MeanAbsoluteError, py::arg("output"), py::arg("expected"));
     m.def("cross_entropy", &CrossEntropy, py::arg("output"), py::arg("expected"));
 
-    // Exportando função SoftMax
+    // Exportando função SoftMax e sua derivada
 
     m.def("softmax", &SoftMax, py::arg("logits"));
+    m.def("softmax_dx", &SoftMaxDx, py::arg("softmax"), py::arg("expected"));
+
+    // Criação dinâmica de redes neurais
+
+    py::class_<NeuralNetworkSchema, std::shared_ptr<NeuralNetworkSchema>>(m, "NeuralNetworkSchema")
+        .def(py::init<>())
+        .def("create_layer_schema_at", &NeuralNetworkSchema::CreateLayerSchemaAt, py::arg("neurons"), py::arg("type"), py::arg("activation_function"), py::arg("id"))
+        .def("create_layer_schema", &NeuralNetworkSchema::CreateLayerSchema, py::arg("neurons"), py::arg("type"), py::arg("activation_function"))
+        .def("remove_layer_schema_at", &NeuralNetworkSchema::RemoveLayerSchemaAt, py::arg("id"))
+        .def("remove_layer_schema", &NeuralNetworkSchema::RemoveLayerSchema)
+        .def("generate_neural_network", &NeuralNetworkSchema::GenerateNeuralNetwork, py::arg("name"))
+        .def("get_amount_of_schemas", &NeuralNetworkSchema::GetAmountOfSchemas);
 }

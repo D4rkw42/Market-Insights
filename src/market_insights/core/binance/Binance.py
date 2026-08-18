@@ -169,9 +169,19 @@ class BinanceKline:
         self.low = ScientificNotation(low )     # Preço da sombra inferior
         self.close = ScientificNotation(close)  # Preço do fechamento
 
-    # Transforma a representaçao do candle em lista
+    # Transforma a representação  do candle em lista de notação normal
 
-    def to_list(self) -> list[float]:
+    def to_normal_list(self) -> list[float]:
+        return [
+            self.open.value,
+            self.high.value,
+            self.low.value,
+            self.close.value
+        ]
+
+    # Transforma a representação do candle em lista de notação científica
+
+    def to_scientific_notation_list(self) -> list[float]:
         return [
             self.open.mantissa,
             self.open.expoent,

@@ -3,7 +3,7 @@
 class ScientificNotation:
     def __init__(self, value: float):
         # Tranformação explícita em float
-        value = float(value)
+        self.value = float(value)
 
         # Transformação em notação científica
 
@@ -14,8 +14,3 @@ class ScientificNotation:
 
         self.mantissa = float(splitted_n[0])
         self.expoent = float(splitted_n[1])
-
-    # Obtém o valor representado pela notação científica
-
-    def get_value(self):
-        return self.mantissa * pow(10, self.expoent)

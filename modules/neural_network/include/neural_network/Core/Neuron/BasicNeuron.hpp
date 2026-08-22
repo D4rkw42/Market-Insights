@@ -12,7 +12,9 @@ class BasicNeuron : public INeuron {
         virtual ~BasicNeuron() = default;
 
         double Load(const std::vector<double>& input) override;
-        std::vector<double> Learn(double learningRate, double gradient) override;
+
+        INeuronGradientsAndDeltas MakeGradientsAndDeltas(double gradient) override;
+        void Learn(const std::vector<double>& gradients, double learningRate) override;
 
         const std::vector<double> Weights(int ref) const override;
 

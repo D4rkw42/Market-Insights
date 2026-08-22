@@ -1,19 +1,14 @@
 {
     "architecture": [
         {
-            "activation_function": "gelu",
+            "activation_function": "tanh",
             "neurons": 2,
-            "type": "basic"
+            "type": "lstm"
         },
         {
             "activation_function": "tanh",
-            "neurons": 4,
-            "type": "basic"
-        },
-        {
-            "activation_function": "sigmoid",
             "neurons": 2,
-            "type": "basic"
+            "type": "lstm"
         }
     ],
     "created_at": "2026-07-15",

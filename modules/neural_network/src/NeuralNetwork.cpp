@@ -110,7 +110,11 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const s
         double gradient = trainFunc(neuron->historic.output, expected[j]);
 
         // Atualizando pesos e bias por neurônio na camada atual
-        deltas[j] = neuron->Learn(learningRate, gradient);
+
+        INeuronGradientsAndDeltas gradientsAndDeltas = neuron->MakeGradientsAndDeltas(gradient);
+
+        deltas[j] = gradientsAndDeltas.deltas;
+        neuron->Learn(gradientsAndDeltas.gradients, learningRate);
     }
 
     // Calculando para as demais camadas
@@ -142,7 +146,11 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const s
             }
 
             // Atualizando pesos e bias para o neurônio atual e obtendo delta
-            aux[j] = neuron->Learn(learningRate, gradient);
+
+            INeuronGradientsAndDeltas gradientsAndDeltas = neuron->MakeGradientsAndDeltas(gradient);
+
+            aux[j] = gradientsAndDeltas.deltas;
+            neuron->Learn(gradientsAndDeltas.gradients, learningRate);
         }
 
         deltas = aux;

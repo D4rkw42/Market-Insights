@@ -25,16 +25,25 @@ double BasicNeuron::Load(const std::vector<double>& input) {
     return output;
 }
 
-std::vector<double> BasicNeuron::Learn(double learningRate, double gradient) {
-    double delta = gradient * this->actFunc.Derivative(this->historic.output);
+INeuronGradientsAndDeltas BasicNeuron::MakeGradientsAndDeltas(double gradient) {
+    INeuronGradientsAndDeltas obj;
+
+    double g = gradient * this->actFunc.Derivative(this->historic.output);
+
+    obj.gradients = std::vector<double> { g };
+    obj.deltas = obj.gradients;
+
+    return obj;
+}
+
+void BasicNeuron::Learn(const std::vector<double>& gradients, double learningRate) {
+    double delta = gradients[0];
 
     for (int i = 0; i < this->weightsNum; ++i) {
         this->weights[i] -= learningRate * delta * this->historic.input[i];
     }
 
     this->bias -= learningRate * delta;
-
-    return std::vector<double> { delta };
 }
 
 const std::vector<double> BasicNeuron::Weights(int ref) const {

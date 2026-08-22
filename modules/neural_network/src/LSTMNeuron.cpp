@@ -123,7 +123,9 @@ double LSTMNeuron::Load(const std::vector<double>& input) {
     return ht;
 }
 
-std::vector<double> LSTMNeuron::Learn(double learningRate, double gradient) {
+INeuronGradientsAndDeltas LSTMNeuron::MakeGradientsAndDeltas(double gradient) {
+    INeuronGradientsAndDeltas obj;
+
     // Capturando todos os dados necessários para o backpropagation
 
     double ft = this->historic.steps["ft"];
@@ -159,8 +161,40 @@ std::vector<double> LSTMNeuron::Learn(double learningRate, double gradient) {
     double d_i = cellStateGr * gt * SigmoidDx(zit);
     double d_g = cellStateGr * it * TanhDx(zgt);
 
-    std::vector<double> delta = { d_f, d_i, d_g, d_o };
-    
+    std::vector<double> deltas = { d_f, d_i, d_g, d_o };
+
+    //
+
+    obj.gradients = std::vector<double> { outputGr, cellStateGr, candCellStateGr, inputGr, forgetGr };
+    obj.deltas = deltas;
+
+    //
+
+    return obj;
+}
+
+void LSTMNeuron::Learn(const std::vector<double>& gradients, double learningRate) {
+    double outputGr = gradients[0];
+
+    double cellStateGr = gradients[1];
+    double candCellStateGr = gradients[2];
+
+    double inputGr = gradients[3];
+    double forgetGr = gradients[4];
+
+    //
+
+    // Capturando todos os dados necessários para o backpropagation
+
+    double ft = this->historic.steps["ft"];
+    double it = this->historic.steps["it"];
+    double ot = this->historic.steps["ot"];
+    double gt = this->historic.steps["gt"];
+
+    std::vector<double> input = this->historic.input;
+
+    double ht_1 = this->historic.steps["ht_1"];
+
     //
 
     // Output gate update
@@ -198,10 +232,6 @@ std::vector<double> LSTMNeuron::Learn(double learningRate, double gradient) {
 
     this->wc -= learningRate * candCellStateGr * TanhDx(gt) * ht_1;
     this->bc -= learningRate * candCellStateGr * TanhDx(gt);
-
-    //  
-
-    return delta;
 }
 
 const std::vector<double> LSTMNeuron::Weights(int ref) const {

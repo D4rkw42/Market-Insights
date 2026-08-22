@@ -40,6 +40,13 @@ struct INeuronHistoric {
     std::unordered_map<std::string, double> steps; // Outros dados relevantes gerados a cada passo de execução
 };
 
+// Conjunto de gradients e deltas gerados no treinamento
+
+struct INeuronGradientsAndDeltas {
+    std::vector<double> gradients;
+    std::vector<double> deltas;
+};
+
 //
 
 class INeuron {
@@ -65,7 +72,9 @@ class INeuron {
         ~INeuron() = default;
 
         virtual double Load(const std::vector<double>& input) = 0;
-        virtual std::vector<double> Learn(double learningRate, double gradient) = 0;
+
+        virtual INeuronGradientsAndDeltas MakeGradientsAndDeltas(double gradient) = 0;
+        virtual void Learn(const std::vector<double>& gradients, double learningRate) = 0;
 
         //
         

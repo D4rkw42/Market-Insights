@@ -11,9 +11,6 @@ from market_insights.globals import *
 
 from market_insights.interface import Application
 
-from neural_network import *
-import time
-
 # Definições do aplicativo
 
 APP_UPDATE_COUNTDOWN = 500 # Tempo de execução (ms)

@@ -46,7 +46,7 @@ inline TrainingErrorFunctionList TRAINING_ERROR_FUNCTION_LIST = {
 };
 
 inline TrainingErrorFunctionDxList TRAINING_ERROR_FUNCTION_DX_LIST = {
-    { "mse", MeanSquaredErrorDx },
-    { "mae", MeanAbsoluteErrorDx },
+    { "mse", SquaredErrorDx },
+    { "mae", AbsoluteErrorDx },
     { "cross_entropy", CrossEntropyDx }
 };

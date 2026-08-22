@@ -18,7 +18,7 @@ inline double MeanSquaredError(const std::vector<double>& output, const std::vec
     return L / output.size();
 }
 
-inline double MeanSquaredErrorDx(double output, double expected) noexcept {
+inline double SquaredErrorDx(double output, double expected) noexcept {
     return -2 * (expected - output);
 }
 
@@ -35,7 +35,7 @@ inline double MeanAbsoluteError(const std::vector<double>& output, const std::ve
     return L / output.size();
 }
 
-inline double MeanAbsoluteErrorDx(double output, double expected) {
+inline double AbsoluteErrorDx(double output, double expected) {
     if (expected == output) {
         return 0;
     }

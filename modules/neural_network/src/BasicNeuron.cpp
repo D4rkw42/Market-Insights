@@ -7,32 +7,34 @@ BasicNeuron::BasicNeuron(int weightNum) : INeuron(weightNum) {}
 //
 
 double BasicNeuron::Load(const std::vector<double>& input) {
-    this->x = input;
-    this->z = 0;
+    double z = 0;
 
     for (int i = 0; i < this->weightsNum; ++i) {
-        this->z += this->weights[i] * input[i];
+        z += this->weights[i] * input[i];
     }
 
-    this->z += this->bias;
-    this->a = this->actFunc.Activate(this->z);
+    z += this->bias;
 
-    return this->a;
+    double output = this->actFunc.Activate(z);
+
+    // Atualizando histórico
+
+    this->historic.input = input;
+    this->historic.output = output;
+
+    return output;
 }
 
-double BasicNeuron::Learn(double learningRate, double gradient) {
-    double delta = this->actFunc.Derivative(this->z) * gradient;
-
-    // Atualizando pesos
+std::vector<double> BasicNeuron::Learn(double learningRate, double gradient) {
+    double delta = gradient * this->actFunc.Derivative(this->historic.output);
 
     for (int i = 0; i < this->weightsNum; ++i) {
-        this->weights[i] -= learningRate * delta * this->x[i];
+        this->weights[i] -= learningRate * delta * this->historic.input[i];
     }
 
-    // Atualizando bias
     this->bias -= learningRate * delta;
 
-    return delta;
+    return std::vector<double> { delta };
 }
 
 const std::vector<double> BasicNeuron::Weights(int ref) const {

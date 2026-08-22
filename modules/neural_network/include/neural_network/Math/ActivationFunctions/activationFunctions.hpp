@@ -10,12 +10,12 @@
 // Sigmoid
 
 inline double Sigmoid(double x) noexcept {
-    return 1.0 / (1 + std::exp(-x));
+    return 1.0 / (1.0 + std::exp(-x));
 }
 
 inline double SigmoidDx(double x) noexcept {
     double sigX = Sigmoid(x);
-    return sigX * (1 - sigX);
+    return sigX * (1.0 - sigX);
 }
 
 // Tangente Hiperbólica
@@ -26,7 +26,7 @@ inline double Tanh(double x) noexcept {
 
 inline double TanhDx(double x) noexcept {
     double tanhX = Tanh(x);
-    return 1 - tanhX * tanhX;
+    return 1.0 - tanhX * tanhX;
 }
 
 // Função Identidade
@@ -36,7 +36,7 @@ constexpr double Identity(double x) noexcept {
 }
 
 constexpr double IdentityDx(double x) noexcept {
-    return 1;
+    return 1.0;
 }
 
 // LeakyReLu
@@ -46,7 +46,7 @@ inline double LeakyReLu100(double x) noexcept {
 }
 
 inline double LeakyReLu100Dx(double x) noexcept {
-    return (x > 0)? 1 : 0.01f;
+    return (x > 0)? 1.0 : 0.01f;
 }
 
 inline double LeakyReLu1000(double x) noexcept {
@@ -54,14 +54,14 @@ inline double LeakyReLu1000(double x) noexcept {
 }
 
 inline double LeakyReLu1000Dx(double x) noexcept {
-    return (x > 0)? 1 : 0.001f;
+    return (x > 0)? 1.0 : 0.001f;
 }
 
 // Gaussian Error Linear Unit
 
 inline double GELU(double x) noexcept {
     static const double a = std::sqrt(2.0 / PI);
-    return (x * 0.5f) * (1 + Tanh(a * (x + 0.044715 * std::pow(x, 3))));
+    return (x * 0.5) * (1.0 + Tanh(a * (x + 0.044715 * std::pow(x, 3))));
 }
 
 inline double GELUDx(double x) noexcept {
@@ -70,7 +70,7 @@ inline double GELUDx(double x) noexcept {
 
     const double TanhU = Tanh(u);
 
-    return 0.5 * (1 + TanhU) + (x * 0.5f) * (1 - TanhU * TanhU) * a * (1 + 0.134145 * x * x);
+    return 0.5 * (1.0 + TanhU) + (x * 0.5) * (1.0 - TanhU * TanhU) * a * (1.0 + 0.134145 * x * x);
 }
 
 // Softmax

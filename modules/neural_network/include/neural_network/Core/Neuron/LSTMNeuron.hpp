@@ -20,17 +20,12 @@ class LSTMNeuron : public INeuron {
         double wo;
 
         // Candidate Cell
+
         std::vector<double> uc;
         double wc, bc;
 
-        // Cell State (previous)
-        double ct_1 = 0;
-
-        // Hidden State (previous)
-        double ht_1 = 0;
-
-        // Estados da célula para treinamento
-        double ft, it, ot, candidate;
+        // Cell state e hidden state (último e passo anterior)
+        double ct = 0, ht = 0;
 
     public:
         LSTMNeuron(int weightsNum);
@@ -39,7 +34,7 @@ class LSTMNeuron : public INeuron {
         virtual ~LSTMNeuron() = default;
 
         double Load(const std::vector<double>& input) override;
-        double Learn(double learningRate, double gradient) override;
+        std::vector<double> Learn(double learningRate, double gradient) override;
 
         const std::vector<double> Weights(int ref) const override;
 

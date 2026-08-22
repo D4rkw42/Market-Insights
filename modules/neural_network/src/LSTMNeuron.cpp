@@ -37,120 +37,169 @@ LSTMNeuron::LSTMNeuron(int weightsNum) : INeuron(weightsNum) {
 double LSTMNeuron::Load(const std::vector<double>& input) {
     // Calculando a Forget Gate
 
-    this->ft = 0;
+    double ft = 0;
 
     for (int i = 0; i < this->weightsNum; ++i) {
-        this->ft += this->uf[i] * input[i];
+        ft += this->uf[i] * input[i];
     }
 
-    this->ft += this->wf * this->ht_1 + this->bf;
-    this->ft = Sigmoid(this->ft);
+    ft += this->wf * this->ht + this->bf;
+
+    double zft = ft;
+    ft = Sigmoid(zft);
 
     // Calculando a Input Gate
 
-    this->it = 0;
+    double it = 0;
     
     for (int i = 0; i < this->weightsNum; ++i) {
-        this->it += this->ui[i] * input[i];
+        it += this->ui[i] * input[i];
     }
 
-    this->it += this->wi * this->ht_1 + this->bi;
-    this->it = Sigmoid(this->it);
+    it += this->wi * this->ht + this->bi;
+
+    double zit = it;
+    it = Sigmoid(zit);
 
     // Candidate Cell
 
-    this->candidate = 0;
+    double candidate = 0;
 
     for (int i = 0; i < this->weightsNum; ++i) {
-        this->candidate += this->uc[i] * input[i];
+        candidate += this->uc[i] * input[i];
     }
 
-    this->candidate += this->wc * this->ht_1 + this->bc;
-    this->candidate = Tanh(this->candidate);
+    candidate += this->wc * this->ht + this->bc;
+
+    double zcand = candidate;
+    candidate = Tanh(zcand);
 
     // Cell State
 
-    double ct = this->ft * this->ct_1 + this->it * this->candidate;
-    this->ct_1 = ct;
+    double ct_1 = this->ct;
+    this->ct = ft * ct_1 + it * candidate;
 
     // Output Gate
 
-    this->ot = 0;
+    double ot = 0;
 
     for (int i = 0; i < this->weightsNum; ++i) {
-        this->ot += this->weights[i] * input[i];
+        ot += this->weights[i] * input[i];
     }
 
-    this->ot += this->wo * this->ht_1 + this->bias;
-    this->ot = Sigmoid(this->ot);
+    ot += this->wo * this->ht + this->bias;
+
+    double zot = ot;
+    ot = Sigmoid(zot);
 
     // Hidden State
 
-    double ht = this->ot * this->actFunc.Activate(ct);
-    this->ht_1 = ht;
+    double ht = ot * this->actFunc.Activate(ct);
 
-    // Atualizando informações
-    this->x = input;
-    this->z = ot;
-    this->a = ht;
+    // Atualizando histórico
+
+    this->historic.output = ht;
+    this->historic.input = input;
+
+    this->historic.steps["ft"] = ft;
+    this->historic.steps["it"] = it;
+    this->historic.steps["ot"] = ot;
+
+    this->historic.steps["zft"] = zft;
+    this->historic.steps["zit"] = zit;
+    this->historic.steps["zot"] = zot;
+    this->historic.steps["zgt"] = zcand;
+
+    this->historic.steps["ct"] = ct;
+    this->historic.steps["ct_1"] = ct_1;
+
+    this->historic.steps["ht_1"] = this->ht;
+
+    this->historic.steps["gt"] = candidate;
+
+    // Atualizando último estado oculto
+    this->ht = ht;
 
     return ht;
 }
 
-double LSTMNeuron::Learn(double learningRate, double gradient) {
+std::vector<double> LSTMNeuron::Learn(double learningRate, double gradient) {
+    // Capturando todos os dados necessários para o backpropagation
+
+    double ft = this->historic.steps["ft"];
+    double it = this->historic.steps["it"];
+    double ot = this->historic.steps["ot"];
+
+    double zft = this->historic.steps["zft"];
+    double zit = this->historic.steps["zit"];
+    double zot = this->historic.steps["zot"];
+    
+    double ct = this->ct;
+    double ct_1 = this->historic.steps["ct_1"];
+
+    double ht_1 = this->historic.steps["ht_1"];
+
+    double gt = this->historic.steps["gt"];
+    double zgt = this->historic.steps["zgt"];
+
+    std::vector<double> input = this->historic.input;
+
     // Calculando todos os gradientes parciais
 
-    double outputGr = gradient * this->actFunc.Activate(this->ct_1);
-    double cellStGr = gradient * this->ot * this->actFunc.Derivative(this->ct_1);
+    double outputGr = gradient * this->actFunc.Activate(ct);
 
-    double inputGr = cellStGr * this->candidate;
-    double candidateGr = cellStGr * this->it;
+    double cellStateGr = gradient * ot * this->actFunc.Derivative(ct);
+    double candCellStateGr = cellStateGr * it;
 
-    double forgetGr = cellStGr * this->ct_1;
+    double inputGr = cellStateGr * gt;
+    double forgetGr = cellStateGr * ct_1;
 
-    double prevCellStGr = cellStGr * this->ft;
+    double d_o = gradient * this->actFunc.Activate(ct) * SigmoidDx(zot);
+    double d_f = cellStateGr * ct_1 * SigmoidDx(zft);
+    double d_i = cellStateGr * gt * SigmoidDx(zit);
+    double d_g = cellStateGr * it * TanhDx(zgt);
 
-    // Atualizando todos os pesos e bias
-
-    // Forget Gate
-
-    for (int i = 0; i < this->weightsNum; ++i) {
-        this->uf[i] -= learningRate * forgetGr * this->ft * (1 - this->ft) * this->x[i];
-    }
-
-    this->wf -= learningRate * forgetGr * this->ft * (1 - this->ft) * this->ht_1;
-    this->bf -= learningRate * forgetGr * this->ft * (1 - this->ft);
-
-    // Input Gate
-
-    for (int i = 0; i < this->weightsNum; ++i) {
-        this->ui[i] -= learningRate * inputGr * this->it * (1 - this->it) * this->x[i];
-    }
-
-    this->wi -= learningRate * inputGr * this->it * (1 - this->it) * this->ht_1;
-    this->bi -= learningRate * inputGr * this->it * (1 - this->it);
-
-    // Candidate
-
-    for (int i = 0; i < this->weightsNum; ++i) {
-        this->uc[i] -= learningRate * candidateGr * this->candidate * (1 - this->candidate) * this->x[i];
-    }
-
-    this->wc -= learningRate * candidateGr * this->candidate * (1 - this->candidate) * this->ht_1;
-    this->bc -= learningRate * candidateGr * this->candidate * (1 - this->candidate);
-
-    // Output Gate
-
-    for (int i = 0; i < this->weightsNum; ++i) {
-        this->weights[i] -= learningRate * outputGr * this->ot * (1 - this->ot) * this->x[i];
-    }
-
-    this->wo -= learningRate * outputGr * this->ot * (1 - this->ot) * this->ht_1;
-    this->bias -= learningRate * outputGr * this->ot * (1 - this->ot);
-
+    std::vector<double> delta = { d_f, d_i, d_g, d_o };
+    
     //
 
-    double delta = forgetGr + inputGr + candidateGr + outputGr;
+    // Output gate update
+
+    for (int i = 0; i < this->weightsNum; ++i) {
+        this->weights[i] -= learningRate * outputGr * SigmoidDx(ot) * input[i];
+    }
+
+    this->wo -= learningRate * outputGr * SigmoidDx(ot) * ht_1;
+    this->bias -= learningRate * outputGr * SigmoidDx(ot);
+
+    // Input gate update
+
+    for (int i = 0; i < this->weightsNum; ++i) {
+        this->ui[i] -= learningRate * inputGr * SigmoidDx(it) * input[i];
+    }
+
+    this->wi -= learningRate * inputGr * SigmoidDx(it) * ht_1;
+    this->bi -= learningRate * inputGr * SigmoidDx(it);
+
+    // Forget gate update
+
+    for (int i = 0; i < this->weightsNum; ++i) {
+        this->uf[i] -= learningRate * forgetGr * SigmoidDx(ft) * input[i];
+    }
+
+    this->wf -= learningRate * forgetGr * SigmoidDx(ft) * ht_1;
+    this->bf -= learningRate * forgetGr * SigmoidDx(ft);
+
+    // Candidate Cell
+
+    for (int i = 0; i < this->weightsNum; ++i) {
+        this->uc[i] -= learningRate * candCellStateGr * TanhDx(gt) * input[i];
+    }
+
+    this->wc -= learningRate * candCellStateGr * TanhDx(gt) * ht_1;
+    this->bc -= learningRate * candCellStateGr * TanhDx(gt);
+
+    //  
 
     return delta;
 }

@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <unordered_map>
 
 #include <neural_network/Core/NeuralNetwork/definitions.hpp>
 
@@ -30,6 +31,15 @@ struct INeuronBuffer {
     std::size_t size;
 };
 
+// Buffer para cada neurônio armazenar o histórico de entradas e saídas
+
+struct INeuronHistoric {
+    std::vector<double> input; // Última entrada da rede
+    double output; // Última saída da rede
+
+    std::unordered_map<std::string, double> steps; // Outros dados relevantes gerados a cada passo de execução
+};
+
 //
 
 class INeuron {
@@ -43,12 +53,11 @@ class INeuron {
         // Viés
         double bias;
 
-        // Dados de execução
-        std::vector<double> x; // Última entrada
-        double z, a; // Última saída linear / última saída ativada
-
         // Função de ativação do neurônio e sua derivada
         INeuronActivationFunctions actFunc;
+
+        // Histórico de dados da rede
+        INeuronHistoric historic = {};
 
         explicit INeuron(int weightsNum);
         INeuron(void) = default;
@@ -56,7 +65,7 @@ class INeuron {
         ~INeuron() = default;
 
         virtual double Load(const std::vector<double>& input) = 0;
-        virtual double Learn(double learningRate, double gradient) = 0;
+        virtual std::vector<double> Learn(double learningRate, double gradient) = 0;
 
         //
         

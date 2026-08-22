@@ -57,8 +57,7 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
 
     int neurons = this->metadata.architecture[0].neurons;
 
-    vec.resize(neurons);
-    vec = { 0 };
+    vec.assign(neurons, 0);
 
     int safeInpSize = (neurons < inputs.size())? neurons : inputs.size();
 
@@ -87,7 +86,9 @@ std::vector<double> NeuralNetwork::ForwardPass(const std::vector<double>& inputs
 }
 
 void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const std::string& trainFuncID, double learningRate) {
-    std::vector<double> deltas, aux;
+    std::vector<
+        std::vector<double>
+    > deltas, aux;
 
     // Calculando para a camada de saída
 
@@ -106,7 +107,7 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const s
         std::shared_ptr<INeuron> neuron = layer[j];
 
         // Calculando gradiente de erro
-        double gradient = trainFunc(neuron->a, expected[j]);
+        double gradient = trainFunc(neuron->historic.output, expected[j]);
 
         // Atualizando pesos e bias por neurônio na camada atual
         deltas[j] = neuron->Learn(learningRate, gradient);
@@ -134,13 +135,10 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const s
             for (int k = 0; k < posLayer.size(); ++k) {
                 // Um neurônio pode ter mais de um peso que se relaciona com a entrada
                 const std::vector<double> weights = posLayer[k]->Weights(j);
-                double partialGradient = 0;
 
                 for (int l = 0; l < weights.size(); ++l) {
-                    partialGradient += weights[l];
+                    gradient += weights[l] * deltas[k][l];
                 }
-
-                gradient += partialGradient * deltas[k];
             }
 
             // Atualizando pesos e bias para o neurônio atual e obtendo delta

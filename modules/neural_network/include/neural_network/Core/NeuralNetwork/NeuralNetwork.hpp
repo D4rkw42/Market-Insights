@@ -51,6 +51,12 @@ struct NeuralNetworkMetadata {
     NeuralNetworkArchitecture architecture;
 };
 
+// Define o histórico de dados de treinamento de uma rede neural
+
+using NeuralNetworkHistoric =   std::vector<
+                                    std::vector<INeuronHistoric>
+                                >;
+
 // Definição de uma rede neural geral
 
 class NeuralNetwork {
@@ -68,9 +74,27 @@ class NeuralNetwork {
         std::vector<double> ForwardPass(const std::vector<double>& inputs);
 
         // Realiza o treinamento da rede
+
+        // Realiza um único passo de treinamento
         void BackPropagation(const std::vector<double>& expected, const std::string& trainFuncID, double learningRate = DEFAULT_LEARNING_RATE);
 
+        // Realiza múltiplos passos de treinamento ao longo do tempo
+        void BackPropagationThroughTime(
+            const std::vector<
+                std::vector<double>
+            >& inputs,
+
+            const std::vector<
+                std::vector<double>
+            >& expected,
+
+            const std::string& trainFuncID, double learningRate = DEFAULT_LEARNING_RATE
+        );
+
         // Utility
+
+        // Gera o histórico de treinamento de uma rede neural
+        NeuralNetworkHistoric GenerateHistoric(void);
 
         // Salva uma rede neural na memória
 

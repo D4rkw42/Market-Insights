@@ -58,13 +58,3 @@ inline double CrossEntropy(const std::vector<double>& output, const std::vector<
 inline double CrossEntropyDx(double output, double expected) noexcept {
     return -expected/output;
 }
-
-// Focal Loss
-
-inline double FocalLoss(double Pt, double alpha, double gama) noexcept {
-    return -alpha * std::pow(1 - Pt, gama) * std::log10(Pt);
-}
-
-inline double FocalLossDx(double Pt, double alpha, double gama) noexcept {
-    return alpha * gama * std::pow(1 - Pt, gama - 1) * std::log(Pt) - alpha * std::pow(1 - Pt, gama) / Pt;
-}

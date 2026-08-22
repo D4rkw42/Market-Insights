@@ -26,14 +26,14 @@ class NeuralNetworkSchema {
 
         // Adição e remoção de esquemas de camada
 
-        void CreateLayerSchemaAt(int neurons, const std::string& type, const std::string& activationFunction, int id) noexcept; // Adiciona um esquema na posição especificada ou no final pos ultrapasse o tamanho do vetor de esquemas
-        void CreateLayerSchema(int neurons, const std::string& type, const std::string& activationFunction) noexcept; // Adiciona um esquema na última posição
+        void CreateLayerSchemaAt(int neurons, const std::string& type, const std::string& activationFunction, int id); // Adiciona um esquema na posição especificada ou no final pos ultrapasse o tamanho do vetor de esquemas
+        void CreateLayerSchema(int neurons, const std::string& type, const std::string& activationFunction); // Adiciona um esquema na última posição
 
-        void RemoveLayerSchemaAt(int id) noexcept; // Remove o esquema da posição especificada
-        void RemoveLayerSchema(void) noexcept; // Remove o esquema da última posição
+        void RemoveLayerSchemaAt(int id); // Remove o esquema da posição especificada
+        void RemoveLayerSchema(void); // Remove o esquema da última posição
 
         // Gera uma nova rede neural com base nas informações especificadas. Retorna nullptr caso não seja possível sua criação.
-        std::shared_ptr<NeuralNetwork> GenerateNeuralNetwork(const std::string& name) const noexcept;
+        std::shared_ptr<NeuralNetwork> GenerateNeuralNetwork(const std::string& name) const;
 
         // Retorna a quantidade de schemas criados  
 

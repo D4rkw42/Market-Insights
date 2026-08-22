@@ -9,7 +9,7 @@
 #include <neural_network/Core/Neuron/BasicNeuron.hpp>
 #include <neural_network/Core/Neuron/LSTMNeuron.hpp>
 
-void NeuralNetworkSchema::CreateLayerSchemaAt(int neurons, const std::string& type, const std::string& activationFunction, int id) noexcept {
+void NeuralNetworkSchema::CreateLayerSchemaAt(int neurons, const std::string& type, const std::string& activationFunction, int id) {
     NeuralNetworkLayerDescriptor descriptor = { neurons, type, activationFunction };
 
     int amountOfSchemas = GetAmountOfSchemas();
@@ -31,14 +31,14 @@ void NeuralNetworkSchema::CreateLayerSchemaAt(int neurons, const std::string& ty
     this->layerSchemas.insert(index, descriptor);
 }
 
-void NeuralNetworkSchema::CreateLayerSchema(int neurons, const std::string& type, const std::string& activationFunction) noexcept {
+void NeuralNetworkSchema::CreateLayerSchema(int neurons, const std::string& type, const std::string& activationFunction) {
     NeuralNetworkLayerDescriptor descriptor = { neurons, type, activationFunction };
     this->layerSchemas.push_back(descriptor);
 }
 
 //
 
-void NeuralNetworkSchema::RemoveLayerSchemaAt(int id) noexcept {
+void NeuralNetworkSchema::RemoveLayerSchemaAt(int id) {
     int amountOfSchemas = GetAmountOfSchemas();
 
     // Proteção para a lista de schemas vazia
@@ -58,13 +58,13 @@ void NeuralNetworkSchema::RemoveLayerSchemaAt(int id) noexcept {
     this->layerSchemas.erase(index);
 }
 
-void NeuralNetworkSchema::RemoveLayerSchema(void) noexcept {
+void NeuralNetworkSchema::RemoveLayerSchema(void) {
     this->layerSchemas.pop_back();
 }
 
 //
 
-std::shared_ptr<NeuralNetwork> NeuralNetworkSchema::GenerateNeuralNetwork(const std::string& name) const noexcept {
+std::shared_ptr<NeuralNetwork> NeuralNetworkSchema::GenerateNeuralNetwork(const std::string& name) const {
     if (GetAmountOfSchemas() < 2) {
         return nullptr;
     }

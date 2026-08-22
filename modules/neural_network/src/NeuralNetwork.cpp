@@ -149,6 +149,10 @@ void NeuralNetwork::BackPropagation(const std::vector<double>& expected, const s
     }
 }
 
+void NeuralNetwork::BackPropagationThroughTime(const std::vector<std::vector<double>>& inputs, const std::vector<std::vector<double>>& expected, const std::string& trainFuncID, double learningRate) {
+    
+}
+
 // Utility
 
 bool NeuralNetwork::SaveNeuralNetwork(const std::shared_ptr<NeuralNetwork>& neuralNetwork, const std::string& name) {
@@ -356,4 +360,26 @@ std::shared_ptr<NeuralNetwork> NeuralNetwork::LoadNeuralNetwork(const std::strin
     //
 
     return neuralNetwork;
+}
+
+NeuralNetworkHistoric NeuralNetwork::GenerateHistoric(void) {
+    NeuralNetworkHistoric historic;
+
+    historic.resize(this->layers.size());
+
+    for (int i = 0; i < this->layers.size(); ++i) {
+        const std::vector<std::shared_ptr<INeuron>>& layer = this->layers[i];
+
+        std::vector<INeuronHistoric> nHistorics;
+        nHistorics.resize(layer.size());
+
+        for (int j = 0; j < layer.size(); ++j) {
+            const std::shared_ptr<INeuron>& neuron = layer[j];
+            nHistorics[j] = neuron->historic;
+        }
+
+        historic[i] = nHistorics;
+    }
+
+    return historic;
 }
